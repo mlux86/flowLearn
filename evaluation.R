@@ -1,5 +1,5 @@
-f1Score <- function(sample, population, predictedThreshA, predictedThreshB)
-# Calculates precision, recall and F1 score.
+gate <- function(sample, population, predictedThreshA, predictedThreshB, negate)
+# Gates a given population using provided thresholds
 #
 # Args:
 #   sample: The name of the sample for loading the parent population and true gate information.
@@ -8,11 +8,8 @@ f1Score <- function(sample, population, predictedThreshA, predictedThreshB)
 #   predictedThreshB: A two-element vector containing predicted lower and upper thresholds for density B (or NaN if not exists)
 #
 # Returns:
-#   A 3-element vector c(precision, recall, f1)
+#   A logical vector with the number cells entries, defining whether a cell is in the gated population or not
 {
-    tg <- readRDS(paste('trainingFiles/', sample , sep = ''))
-    gateAssignments <- tg[[population]]@gateAssignments
-
     populationNormalized <- normalizePopulationName(population)
 
     fcs.name <- str_replace(sample, '\\.rds', '')
@@ -36,16 +33,36 @@ f1Score <- function(sample, population, predictedThreshA, predictedThreshB)
         predictedGateAssignments <- predictedGateAssignments & exprs[,2] < predictedThreshB[2]
     }
 
-    if (tg[[population]]@negate)
+    if (negate)
     {
         predictedGateAssignments <- !predictedGateAssignments
     }
+
+    predictedGateAssignments
+}
+
+f1Score <- function(sample, population, predictedThreshA, predictedThreshB)
+# Calculates precision, recall and F1 score.
+#
+# Args:
+#   sample: The name of the sample for loading the parent population and true gate information.
+#   population: The name of the child population.
+#   predictedThreshA: A two-element vector containing predicted lower and upper thresholds for density A (or NaN if not exists)
+#   predictedThreshB: A two-element vector containing predicted lower and upper thresholds for density B (or NaN if not exists)
+#
+# Returns:
+#   A 5-element vector c(precision, recall, f1, proportion, predicted proportion)
+{
+    tg <- readRDS(paste('trainingFiles/', sample , sep = ''))
+    gateAssignments <- tg[[population]]@gateAssignments
+
+    predictedGateAssignments <- gate(sample, population, predictedThreshA, predictedThreshB, tg[[population]]@negate)
 
     precision <- sum(gateAssignments & predictedGateAssignments) / sum(predictedGateAssignments)
     recall <- sum(gateAssignments & predictedGateAssignments) / sum(gateAssignments)
     f1 <- 2 * precision * recall / (precision + recall)
       
-    c(precision, recall, f1)
+    c(precision, recall, f1, sum(gateAssignments), sum(predictedGateAssignments))
 }
 
 evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predictedThreshB)
@@ -60,7 +77,7 @@ evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predi
 #
 # Returns: 
 #   A list with keys meanPerf and medianPerf, each containing
-#   3-element vectors with the mean/median precision, recall and f1 scores.
+#   5-element vectors with the mean/median precision, recall, f1 scores, proportions, and predicted proportions.
 {
     cl <- makeCluster(detectCores(), type = "FORK")
 
