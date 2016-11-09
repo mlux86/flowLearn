@@ -1,5 +1,7 @@
 library(flowLearn)
 
+source('evaluation.R')
+
 preloaded <- new.env()
 load('trainingFiles/tr.dtwdists.RData', preloaded)
 n <- length(preloaded$tr$cd45@samples) # we could've chosen any population here. It's just about the number of samples
