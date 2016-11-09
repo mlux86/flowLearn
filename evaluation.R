@@ -1,14 +1,12 @@
+#' Calculates precision, recall and F1 score.
+#'
+#' @param sample The name of the sample for loading the parent population and true gate information.
+#' @param population The name of the child population.
+#' @param predictedThreshA A two-element vector containing predicted lower and upper thresholds for density A (or NaN if not exists)
+#' @param predictedThreshB A two-element vector containing predicted lower and upper thresholds for density B (or NaN if not exists)
+#'
+#' @return A 5-element vector c(precision, recall, f1, proportion, predicted proportion)
 f1Score <- function(sample, population, predictedThreshA, predictedThreshB)
-# Calculates precision, recall and F1 score.
-#
-# Args:
-#   sample: The name of the sample for loading the parent population and true gate information.
-#   population: The name of the child population.
-#   predictedThreshA: A two-element vector containing predicted lower and upper thresholds for density A (or NaN if not exists)
-#   predictedThreshB: A two-element vector containing predicted lower and upper thresholds for density B (or NaN if not exists)
-#
-# Returns:
-#   A 5-element vector c(precision, recall, f1, proportion, predicted proportion)
 {
     tg <- readRDS(paste('trainingFiles/', sample , sep = ''))
     gateAssignments <- tg[[population]]@gateAssignments
@@ -22,19 +20,17 @@ f1Score <- function(sample, population, predictedThreshA, predictedThreshB)
     c(precision, recall, f1, sum(gateAssignments), sum(predictedGateAssignments))
 }
 
+#' Evaluates performance for a full population.
+#'
+#' @param tr A LearningSet object containing n samples.
+#' @param population The name of the child population.
+#' @param testIdx Indexes of samples to be evaluated.
+#' @param predictedThreshA A n-by-2 matrix containing predicted lower and upper thresholds for density A (or NaN if not exists)
+#' @param predictedThreshB A n-by-2 matrix containing predicted lower and upper thresholds for density B (or NaN if not exists)
+#'
+#' @return A list with keys meanPerf and medianPerf, each containing 5-element vectors with the 
+#'         mean/median precision, recall, f1 scores, proportions, and predicted proportions.
 evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predictedThreshB)
-# Evaluates performance for a full population.
-#
-# Args:
-#   tr: A LearningSet object containing n samples.
-#   population: The name of the child population.
-#   testIdx: Indexes of samples to be evaluated.
-#   predictedThreshA: A n-by-2 matrix containing predicted lower and upper thresholds for density A (or NaN if not exists)
-#   predictedThreshB: A n-by-2 matrix containing predicted lower and upper thresholds for density B (or NaN if not exists)
-#
-# Returns: 
-#   A list with keys meanPerf and medianPerf, each containing
-#   5-element vectors with the mean/median precision, recall, f1 scores, proportions, and predicted proportions.
 {
     samples <- tr@samples
 
@@ -64,20 +60,19 @@ evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predi
     })    
 }
 
+#' Evaluates a full population. 
+#'
+#' Specifically loads it (if necessary), selects prototypes, predicts thresholds and evaluates precision, recall and F1.
+#'
+#' @param population The name of the child population.
+#' @param numTrain Number of prototypes to use (i.e. 2 for 1 per channel)
+#' @param seed Seed for permuting samples after loading.
+#' @param preloaded A list of preloaded data to avoid repeated loading of data in some scenarios.
+#'                  List keys are tr, dA and dB containing a loaded LearningSet object, 
+#'                  and distance matrices for channel A and B, respectively.
+#'
+#' @return Performance as returned by evaluatePerformance()
 evaluatePopulation <- function(population, numTrain, seed = NaN, preloaded = NULL)
-# Evaluates a full population, specifically loads it (if necessary), selects
-# prototypes, predicts thresholds and evaluates precision, recall and F1.
-#
-# Args:
-#   population: The name of the child population.
-#   numTrain: Number of prototypes to use (i.e. 2 for 1 per channel)
-#   seed: Seed for permuting samples after loading.
-#   preloaded: A list of preloaded data to avoid repeated loading of data in some scenarios.
-#              List keys are tr, dA and dB containing a loaded LearningSet object, 
-#              and distance matrices for channel A and B, respectively.
-#
-# Returns: 
-#   Performance as returned by evaluatePerformance()
 {
 
     if(is.null(preloaded))
