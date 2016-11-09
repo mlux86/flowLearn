@@ -80,7 +80,8 @@ getMeanProportion <- function(tr, population)
 
     n <- length(tr[[populationNormalized]]@samples)
 
-    cl <- parallel::makeCluster(parallel::detectCores(), type = "FORK")
+    cl <- parallel::makeCluster(parallel::detectCores())
+    parallel::clusterExport(cl, c("tr", "population", "populationNormalized"),  envir = environment())
 
     tryCatch({
         props <- t(parallel::parSapply(cl, 1:n, function(i) 

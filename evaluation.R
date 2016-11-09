@@ -36,7 +36,10 @@ evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predi
 #   A list with keys meanPerf and medianPerf, each containing
 #   5-element vectors with the mean/median precision, recall, f1 scores, proportions, and predicted proportions.
 {
-    cl <- parallel::makeCluster(4, type = "FORK")
+    samples <- tr@samples
+
+    cl <- parallel::makeCluster(parallel::detectCores())
+    parallel::clusterExport(cl, c("gate", "f1Score", "samples", "testIdx", "population", "predictedThreshA", "predictedThreshB"),  envir = environment())
 
     tryCatch({
 
@@ -44,7 +47,7 @@ evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predi
 
         perf <- t(parallel::parSapply(cl, 1:numTest, function(i) 
         {
-            f1Score(tr@samples[[testIdx[i]]], population, predictedThreshA[i,], predictedThreshB[i,])
+            f1Score(samples[[testIdx[i]]], population, predictedThreshA[i,], predictedThreshB[i,])
         }))
 
         p1 <- apply(perf, 2, function(x) mean(na.omit(x)))
@@ -61,7 +64,7 @@ evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predi
     })    
 }
 
-evaluatePopulation <- function(population, numTrain, seed = NaN, preloaded = NA)
+evaluatePopulation <- function(population, numTrain, seed = NaN, preloaded = NULL)
 # Evaluates a full population, specifically loads it (if necessary), selects
 # prototypes, predicts thresholds and evaluates precision, recall and F1.
 #
@@ -77,7 +80,7 @@ evaluatePopulation <- function(population, numTrain, seed = NaN, preloaded = NA)
 #   Performance as returned by evaluatePerformance()
 {
 
-    if(is.na(preloaded))
+    if(is.null(preloaded))
     {
         load('trainingFiles/tr.dtwdists.RData')
     } else

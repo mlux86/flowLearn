@@ -164,7 +164,8 @@ predictThresholds <- function(tr, selectedPrototypes)
 	predictedThreshA <- matrix(NaN, numTest, 2)
 	predictedThreshB <- matrix(NaN, numTest, 2)
 
-	cl <- parallel::makeCluster(4, type = "FORK")
+	cl <- parallel::makeCluster(parallel::detectCores())
+	parallel::clusterExport(cl, c("tr", "selectedPrototypes", "numTest"),  envir = environment())
 
 	tryCatch({
 
