@@ -1,5 +1,3 @@
-library(dtw)
-
 dtwDistanceMatrix <- function(x, y)
 # Computes a euclidean distance matrix for two given densities.
 #
@@ -50,6 +48,7 @@ weighDtwDistances <- function(m, g = 0.025)
     w * m
 }
 
+#' @export
 myDtw <- function(a, b, ...)
 # There is a global proxy function which modularizes the parameters for DTW to
 # ensure consistent use throughout flowLearn. To Change DTW parameters, change
@@ -72,4 +71,46 @@ myDtw <- function(a, b, ...)
     ddtw$query <- a
     ddtw$reference <- b
     ddtw
+}
+
+dtwDistanceMatrices <- function(tr, cl)
+# Computes DTW distance matrices for channel A and B, respectively.
+# Each matrix is of size nxn where n is the number of samples.
+# This implementation is parallelized. Only the upper triangle matrix is computed and then mirrored.
+#
+# Args:
+#   tr: A LearningSet object.
+#   cl: A compute cluster as obtained by parallel::makeCluster()
+#
+# Returns:
+#   A list with keys dA and dB indicating the distance matrices for channel A and B.
+{
+
+    n <- length(tr@samples)
+
+    # channel A
+
+    m <- parSapply(cl, 2:n, # start at 2 for upper triangle only
+        function(i.1) 
+        {
+            sapply(1:(i.1-1), function(i.2) myDtw(tr@densYchanA[i.1,], tr@densYchanA[i.2,], distance.only = T)$distance)
+        })
+
+    dA <- matrix(0, n, n)
+    dA[lower.tri(dA, diag=FALSE)] <- unlist(m)
+    dA <- dA + t(dA)
+
+    # channel B
+
+    m <- parSapply(cl, 2:n, # start at 2 for upper triangle only
+        function(i.1) 
+        {
+            sapply(1:(i.1-1), function(i.2) myDtw(tr@densYchanB[i.1,], tr@densYchanB[i.2,], distance.only = T)$distance)
+        })
+
+    dB <- matrix(0, n, n)
+    dB[lower.tri(dB, diag=FALSE)] <- unlist(m)
+    dB <- dB + t(dB)
+
+    list(dA = dA, dB = dB)
 }

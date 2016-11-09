@@ -3,6 +3,7 @@
 library(stringr)
 library(flowCore)
 library(flowDensity)
+library(flowLearn)
 
 source("flowLearn.R")
 

@@ -32,6 +32,7 @@ alignThreshold <- function(densX, densY, refDensX, refDensY, refThreshold)
     thresh
 }
 
+#' @export
 selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
 # Selects prototypes for a given set of samples.
 # For now, prototypes are selected randomly.
@@ -94,6 +95,7 @@ selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
 
 }
 
+#' @export
 selectFixedPrototypes <- function(tr, dA, dB, trainIdxA, trainIdxB)
 # Selects prototypes for a given set of samples.
 # Fixes the prototype indices and only calculates test indices to be used.
@@ -142,6 +144,7 @@ selectFixedPrototypes <- function(tr, dA, dB, trainIdxA, trainIdxB)
 	return(list(testIdx = testIdx, trainIdxA = trainIdxA, trainIdxB = trainIdxB, labelsA = labelsA, labelsB = labelsB))
 }
 
+#' @export
 predictThresholds <- function(tr, selectedPrototypes)
 # Predicts thresholds for one population.
 #

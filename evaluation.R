@@ -8,44 +8,18 @@ f1Score <- function(sample, population, predictedThreshA, predictedThreshB)
 #   predictedThreshB: A two-element vector containing predicted lower and upper thresholds for density B (or NaN if not exists)
 #
 # Returns:
-#   A 3-element vector c(precision, recall, f1)
+#   A 5-element vector c(precision, recall, f1, proportion, predicted proportion)
 {
     tg <- readRDS(paste('trainingFiles/', sample , sep = ''))
     gateAssignments <- tg[[population]]@gateAssignments
 
-    populationNormalized <- normalizePopulationName(population)
-
-    fcs.name <- str_replace(sample, '\\.rds', '')
-    exprs <- readRDS(paste('trainingFiles/fcs/', fcs.name, '.', populationNormalized, '.parent.fcs.rds', sep = ''))
-
-    predictedGateAssignments <- matrix(T, nrow(exprs), 1)
-    if (!is.nan(predictedThreshA[1]))
-    {
-        predictedGateAssignments <- predictedGateAssignments & exprs[,1] > predictedThreshA[1]
-    }
-    if (!is.nan(predictedThreshA[2]))
-    {
-        predictedGateAssignments <- predictedGateAssignments & exprs[,1] < predictedThreshA[2]
-    }    
-    if (!is.nan(predictedThreshB[1]))
-    {
-        predictedGateAssignments <- predictedGateAssignments & exprs[,2] > predictedThreshB[1]
-    }
-    if (!is.nan(predictedThreshB[2]))
-    {
-        predictedGateAssignments <- predictedGateAssignments & exprs[,2] < predictedThreshB[2]
-    }
-
-    if (tg[[population]]@negate)
-    {
-        predictedGateAssignments <- !predictedGateAssignments
-    }
+    predictedGateAssignments <- gate(sample, population, predictedThreshA, predictedThreshB, tg[[population]]@negate)
 
     precision <- sum(gateAssignments & predictedGateAssignments) / sum(predictedGateAssignments)
     recall <- sum(gateAssignments & predictedGateAssignments) / sum(gateAssignments)
     f1 <- 2 * precision * recall / (precision + recall)
       
-    c(precision, recall, f1)
+    c(precision, recall, f1, sum(gateAssignments), sum(predictedGateAssignments))
 }
 
 evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predictedThreshB)
@@ -60,9 +34,10 @@ evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predi
 #
 # Returns: 
 #   A list with keys meanPerf and medianPerf, each containing
-#   3-element vectors with the mean/median precision, recall and f1 scores.
+#   5-element vectors with the mean/median precision, recall, f1 scores, proportions, and predicted proportions.
 {
-    cl <- makeCluster(detectCores(), type = "FORK")
+    # cl <- makeCluster(detectCores(), type = "FORK")
+    cl <- makeCluster(4, type = "FORK")
 
     tryCatch({
 
@@ -79,7 +54,7 @@ evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predi
         printf("mean\t%.2f\t\t%.2f\t\t%.2f\n", p1[1], p1[2], p1[3])
         printf("median\t%.2f\t\t%.2f\t\t%.2f\n", p2[1], p2[2], p2[3])
 
-        return(list(meanPerf = p1, medianPerf = p2))
+        return(list(perf = perf, meanPerf = p1, medianPerf = p2))
     }, error = function(e) {
         print(e)
     }, finally = {
@@ -123,14 +98,14 @@ evaluatePopulation <- function(population, numTrain, seed = NaN, preloaded = NA)
 
     # shuffle
 
-    if(!is.nan(seed))
-    {
-        set.seed(seed)
-    }
-    perm <- sample(n)
-    dA <- dA[perm, perm]
-    dB <- dB[perm, perm]
-    tr <- permTrainFiles(tr, perm = perm)
+    # if(!is.nan(seed))
+    # {
+    #     set.seed(seed)
+    # }
+    # perm <- sample(n)
+    # dA <- dA[perm, perm]
+    # dB <- dB[perm, perm]
+    # tr <- permTrainFiles(tr, perm = perm)
 
     # predict
 

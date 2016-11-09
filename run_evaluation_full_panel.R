@@ -1,4 +1,4 @@
-source('flowLearn.R')
+library(flowLearn)
 
 preloaded <- new.env()
 load('trainingFiles/tr.dtwdists.RData', preloaded)
@@ -6,51 +6,51 @@ n <- length(preloaded$tr$cd45@samples) # we could've chosen any population here.
 
 # populations for the OneStudy data set
 
-populations <- list(
-                    'CD45',
-                    'PBMC',
-                    'Tcell',
-                    'Bcell',
-                    'DN',
-                    'CD4',
-                    'CD8',
-                    'CD14',
-                    'CD14++CD16-',
-                    'CD14++CD16+',
-                    'CD14+CD16-',
-                    'CD14+CD16+',
-                    'NK',
-                    'NKT',
-                    'CD56Bright',
-                    'CD64++CD16+',
-                    'CD56BrightCD16-'
-                    )
+# populations <- list(
+#                     'CD45',
+#                     'PBMC',
+#                     'Tcell',
+#                     'Bcell',
+#                     'DN',
+#                     'CD4',
+#                     'CD8',
+#                     'CD14',
+#                     'CD14++CD16-',
+#                     'CD14++CD16+',
+#                     'CD14+CD16-',
+#                     'CD14+CD16+',
+#                     'NK',
+#                     'NKT',
+#                     'CD56Bright',
+#                     'CD64++CD16+',
+#                     'CD56BrightCD16-'
+#                     )
 
 
 # populations for the IMPC bone marrow data set
 
-# populations <- list(
-#                     'Singlets',
-#                     'Live',
-#                     'Lymphocytes',
-#                     'CD45',
-#                     'NOT(Granulocyte Pre)',
-#                     'Granulocyte Pre',
-#                     'CD3 Tcell',
-#                     'NOT(CD3 Tcell)',
-#                     'Plasma',
-#                     'NOT(Plasma)',
-#                     'Bcell',
-#                     'Myeloid',
-#                     'CD43+',
-#                     'CD43-',
-#                     'HFA',
-#                     'HFB',
-#                     'HFC',
-#                     'HFD',
-#                     'HFE',
-#                     'HFF'
-#                     )
+populations <- list(
+                    'Singlets',
+                    'Live',
+                    'Lymphocytes',
+                    'CD45',
+                    'NOT(Granulocyte Pre)',
+                    'Granulocyte Pre',
+                    'CD3 Tcell',
+                    'NOT(CD3 Tcell)',
+                    'Plasma',
+                    'NOT(Plasma)',
+                    'Bcell',
+                    'Myeloid',
+                    'CD43+',
+                    'CD43-',
+                    'HFA',
+                    'HFB',
+                    'HFC',
+                    'HFD',
+                    'HFE',
+                    'HFF'
+                    )
 
 
 # how many prototypes (i.e. 1 per channel means numTrain <- 2)
@@ -84,13 +84,13 @@ dfMeanF1 <- as.data.frame(meanF1)
 colnames(medianF1) <- populations
 dfMedianF1 <- as.data.frame(medianF1)
 
-proportions <- unlist(lapply(populations, function(pop) getMeanProportion(preloaded$tr, pop)))
-if (exists('proportions'))
-{
-    populationsAndProportions <- lapply(1:length(populations), function(i) sprintf('%s (%.2f%%)', populations[[i]], proportions[[i]]*100))
-    colnames(dfMedianF1) <- populationsAndProportions
-    colnames(dfMeanF1) <- populationsAndProportions
-}
+# proportions <- unlist(lapply(populations, function(pop) getMeanProportion(preloaded$tr, pop)))
+# if (exists('proportions'))
+# {
+#     populationsAndProportions <- lapply(1:length(populations), function(i) sprintf('%s (%.2f%%)', populations[[i]], proportions[[i]]*100))
+#     colnames(dfMedianF1) <- populationsAndProportions
+#     colnames(dfMeanF1) <- populationsAndProportions
+# }
 
 p <- ggplot(stack(dfMedianF1), aes(x = ind, y = values)) + 
     geom_boxplot() + 

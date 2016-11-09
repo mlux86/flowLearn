@@ -1,82 +1,32 @@
-source('flowLearn.R')
+library(flowLearn)
 
-load('trainingFiles/tr.dtwdists.RData')
+library(ggplot2)
+library(Rtsne)
+library(gridExtra)
+library(stringr)
 
-numTrain <- 2
+preloaded <- new.env()
+load('trainingFiles.impc.new/tr.dtwdists.RData', preloaded)
 
-population <- 'CD64++CD16+'
-# population <- 'CD14+CD16-'
-
+population <- 'Singlets'
 popId <- normalizePopulationName(population)
 
-tr <- tr[[popId]]
-dA <- dA[[popId]]
-dB <- dB[[popId]]
+tr <- preloaded$tr[[popId]]
+dA <- preloaded$dA[[popId]]
+dB <- preloaded$dB[[popId]]
 
 n <- nrow(tr@densYchanA)
 
-protoIdx <- 4
+# m <- as.dist(dA); 
+m <- dB; 
 
-# selectedPrototypes <- selectPrototypes(tr, dA, dB, numTrain)
-selectedPrototypes <- selectFixedPrototypes(tr, dA, dB, c(protoIdx), c(protoIdx))
+pca <- princomp(m)
+tsne <- Rtsne(m, dims = 2, perplexity = round(log(nrow(m))^2)); 
+df <- data.frame(sne1 = tsne$Y[, 1], sne2 = tsne$Y[, 2], pca1 = pca$scores[, 1], pca2 = pca$scores[, 2], labels <- 1:n)
 
-predictedThresholds <- predictThresholds(tr, selectedPrototypes)
+pPca <- ggplot(df, aes(x = pca1, y = pca2, colour = labels)) + geom_point(size = 2)
+pSne <- ggplot(df, aes(x = sne1, y = sne2, colour = labels)) + geom_point(size = 2)
 
-evaluatePerformance(tr, population, selectedPrototypes$testIdx, predictedThresholds$threshA, predictedThresholds$threshB)
-
-
-
-
-
-# for (z in 1:length(selectedPrototypes$testIdx))
-# {
-
-# 	i <- selectedPrototypes$testIdx[z]
-
-# 	protoIdx <- selectedPrototypes$trainIdxA[selectedPrototypes$labelsA[i]]
-
-# 	print('train')
-# 	print(tr@samples[[protoIdx]])
-# 	print('test')
-# 	print(tr@samples[[i]])
-
-# 	dtwObj <- myDtw(tr@densYchanA[i,], tr@densYchanA[protoIdx,], k = T)
-
-# 	plot(dtwObj, type = 'twoway', offset = 3, match.indices = 100)
-
-# 	dev.new()
-# 	plotDensThresh(tr@densXchanA[protoIdx,], tr@densYchanA[protoIdx,], tr@threshA[protoIdx,])
-
-# 	dev.new()
-# 	plotDensThresh(tr@densXchanA[i,], tr@densYchanA[i,], tr@threshA[i,], predictedThresholds$threshA[z,])
-
-# 	readline()
-
-# }
-
-
-for (z in 1:length(selectedPrototypes$testIdx))
-{
-
-	i <- selectedPrototypes$testIdx[z]
-
-	protoIdx <- selectedPrototypes$trainIdxB[selectedPrototypes$labelsB[i]]
-
-	print('train')
-	print(tr@samples[[protoIdx]])
-	print('test')
-	print(tr@samples[[i]])
-
-	dtwObj <- myDtw(tr@densYchanB[i,], tr@densYchanB[protoIdx,], k = T);	plot(dtwObj, type = 'twoway', offset = 3, match.indices = 100)
-
-	# dev.new()
-	# plotDensThresh(tr@densXchanB[protoIdx,], tr@densYchanB[protoIdx,], tr@threshB[protoIdx,])
-
-	# dev.new()
-	# plotDensThresh(tr@densXchanB[i,], tr@densYchanB[i,], tr@threshB[i,], predictedThresholds$threshB[z,])
-
-	# readline()
-
-}
-
-
+pdf(paste0("/tmp/pdfs/", popId, "_channelB.pdf"))
+grid.arrange(pPca, pSne, ncol = 1, top = population)
+dev.off()
