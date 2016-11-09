@@ -62,38 +62,3 @@ rotateData <- function(data, chans=NULL, theta=NULL)
     }
     return(list(data=data,theta=theta))
 }
-
-#' Reads proportions for a given population and return the mean proportion.
-#'
-#' @param tr The LearningSet object to calculate the statistic for.
-#' @param population The population name.
-#'
-#' @return The mean proportion.
-#'
-#' @export
-getMeanProportion <- function(tr, population)
-{
-    populationNormalized <- normalizePopulationName(population)
-
-    n <- length(tr[[populationNormalized]]@samples)
-
-    cl <- parallel::makeCluster(parallel::detectCores())
-    parallel::clusterExport(cl, c("tr", "population", "populationNormalized"),  envir = environment())
-
-    tryCatch({
-        props <- t(parallel::parSapply(cl, 1:n, function(i) 
-        {
-            tg <- readRDS(paste0('trainingFiles/', tr[[populationNormalized]]@samples[[i]]))
-
-            gateAssignments <- tg[[population]]@gateAssignments     
-
-            sum(gateAssignments) / length(gateAssignments)
-        }))
-
-        return(mean(props))
-    }, error = function(e) {
-        print(e)
-    }, finally = {
-        parallel::stopCluster(cl) 
-    }) 
-}
