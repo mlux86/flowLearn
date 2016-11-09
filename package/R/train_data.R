@@ -117,6 +117,8 @@ readTrainFiles <- function(folder, population, numFeatures = 512)
 #' @param subsampleRatio Only return this proportion of the given data, i.e. for bootstrapping. Ignored if perm is given
 #'
 #' @return A LearningSet object that was permuted by the given parameters.
+#' 
+#' @export
 permTrainFiles <- function(tr, perm = NaN, seed = NaN, subsampleRatio = NaN)
 {
 

@@ -2,9 +2,8 @@
 
 export(dtwMain)
 export(estimateDensity)
-export(gate)
-export(getMeanProportion)
 export(normalizePopulationName)
+export(permTrainFiles)
 export(plotDensThresh)
 export(plotGate)
 export(predictThresholds)
