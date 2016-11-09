@@ -1,15 +1,13 @@
+#' Aligns a threshold from a reference to a test density.
+#'
+#' @param densX Density x values of the test density.
+#' @param densY Density y values of the test density.
+#' @param refDensX Density x values of the reference density.
+#' @param refDensY Density y values of the reference density.
+#' @param refThreshold Threshold of the reference density.
+#'
+#' @return The predicted threshold in the test density.
 alignThreshold <- function(densX, densY, refDensX, refDensY, refThreshold)
-# Aligns a threshold from a reference to a test density.
-#
-# Args:
-#   densX: Density x values of the test density.
-#   densY: Density y values of the test density.
-#   refDensX: Density x values of the reference density.
-#   refDensY: Density y values of the reference density.
-#   refThreshold: Threshold of the reference density.
-#
-# Returns:
-#   The predicted threshold in the test density.
 {
     dtwObj <- dtwMain(densY, refDensY)
 
@@ -32,23 +30,25 @@ alignThreshold <- function(densX, densY, refDensX, refDensY, refThreshold)
     thresh
 }
 
+#' Selects prototypes for a given set of samples.
+#'
+#' For now, prototypes are selected randomly.
+#'
+#' @param tr The LearningSet object.
+#' @param dA The DTW distances for channel A.
+#' @param dB The DTW distances for channel B.
+#' @param numTrain The number of prototypes to use (i.e. 2 for 1 per channel)
+#' @param seed A random seed.
+#'
+#' @return A list with the following keys:
+#' \itemize{
+#'  \item{"testIdx": Test indices not containing the selected prototype indices.}
+#'  \item{"prototypesA": Prototype indices for channel A.}
+#'  \item{"prototypesB": Prototype indices for channel B.}
+#' }
+#'
 #' @export
 selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
-# Selects prototypes for a given set of samples.
-# For now, prototypes are selected randomly.
-#
-# Args:
-#   tr: The LearningSet object.
-#   dA: The DTW distances for channel A.
-#   dB: The DTW distances for channel B.
-#   numTrain: The number of prototypes to use (i.e. 2 for 1 per channel)
-#   seed: A random seed.
-#
-# Returns:
-#   A list with the following keys:
-#   	testIdx: Test indices not containing the selected prototype indices.
-#       prototypesA: Prototype indices for channel A.
-#       prototypesB: Prototype indices for channel B.
 {
 
 	if(numTrain %% 2 != 0)
@@ -97,23 +97,25 @@ selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
 
 }
 
-# #' @export
+#' Selects prototypes for a given set of samples.
+#'
+#' For now, prototypes are selected randomly.
+#'
+#' @param tr The LearningSet object.
+#' @param dA The DTW distances for channel A.
+#' @param dB The DTW distances for channel B.
+#'  @param trainIdxA Prototype indices for channel A.
+#'  @param trainIdxB Prototype indices for channel B.
+#'
+#' @return A list with the following keys:
+#' \itemize{
+#'  \item{"testIdx": Test indices not containing the selected prototype indices.}
+#'  \item{"prototypesA": Prototype indices for channel A.}
+#'  \item{"prototypesB": Prototype indices for channel B.}
+#' }
+#'
+#' @export
 selectFixedPrototypes <- function(tr, dA, dB, trainIdxA, trainIdxB)
-# Selects prototypes for a given set of samples.
-# Fixes the prototype indices and only calculates test indices to be used.
-#
-# Args:
-#   tr: The LearningSet object.
-#   dA: The DTW distances for channel A.
-#   dB: The DTW distances for channel B.
-#   trainIdxA: Prototype indices for channel A.
-#   trainIdxB: Prototype indices for channel B.
-#
-# Returns:
-#   A list with the following keys:
-#   	testIdx: Test indices not containing the selected prototype indices.
-#       prototypesA: Prototype indices for channel A.
-#       prototypesB: Prototype indices for channel B.
 {
 	n <- nrow(tr@densYchanA)
 
@@ -146,18 +148,19 @@ selectFixedPrototypes <- function(tr, dA, dB, trainIdxA, trainIdxB)
 	return(list(testIdx = testIdx, prototypesA = prototypesA[testIdx], prototypesB = prototypesB[testIdx]))
 }
 
+#' Predicts thresholds for one population.
+#'
+#' @param tr The LearningSet object.
+#' @param selectedPrototypes Prototypes as selected by the selectPrototypes() or selectFixedPrototypes() functions.
+#'
+#' @return A list with the following keys:
+#' \itemize{
+#'  \item{"threshA": A n-by-2 matrix with predicted thresholds for channel A. NaN if threshold does not exist.}
+#'  \item{"threshB": A n-by-2 matrix with predicted thresholds for channel B. NaN if threshold does not exist.}
+#' }
+#'
 #' @export
 predictThresholds <- function(tr, selectedPrototypes)
-# Predicts thresholds for one population.
-#
-# Args:
-#   tr: The LearningSet object.
-#   selectedPrototypes: Prototypes as selected by the selectPrototypes() or selectFixedPrototypes() functions.
-#
-# Returns:
-#   A list with the following keys:
-#   	threshA: A n-by-2 matrix with predicted thresholds for channel A. NaN if threshold does not exist.
-#       threshB: A n-by-2 matrix with predicted thresholds for channel B. NaN if threshold does not exist.
 {
 	numTest <- length(selectedPrototypes$testIdx)
 

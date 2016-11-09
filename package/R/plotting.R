@@ -1,15 +1,12 @@
+#' Plots a density and true/predicted thresholds.
+#'
+#' @param densX Density x values.
+#' @param densY Density y values.
+#' @param thresh True threshold.
+#' @param predicted Predicted threshold.
+#'
 #' @export
 plotDensThresh <- function(densX, densY, thresh = NULL, predicted = NULL)
-# Plots a density and true/predicted thresholds.
-#
-# Args:
-#   densX: Density x values.
-#   densY: Density y values.
-#   thresh: True threshold.
-#   predicted: Predicted threshold.
-#
-# Returns:
-#   Nothing.
 {
     plot(
          densX,
@@ -30,16 +27,13 @@ plotDensThresh <- function(densX, densY, thresh = NULL, predicted = NULL)
     }
 }
 
+#' Plots a gates as given by a TrainingGate object.
+#'
+#' @param trainGate The TrainingGate object to plot.
+#' @param numFeatures Number of features to use.
+#'
 #' @export
 plotGate <- function(trainGate, numFeatures = 512)
-# Plots a gates as given by a TrainingGate object.
-#
-# Args:
-#   trainGate: The TrainingGate object to plot.
-#   numFeatures: Number of features to use.
-#
-# Returns:
-#   Nothing.
 {
     par(mfrow = c(2, 1))
 

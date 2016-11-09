@@ -1,15 +1,14 @@
+#' Gates a given population using provided thresholds
+#'
+#' @param sample The name of the sample for loading the parent population and true gate information.
+#' @param population The name of the child population.
+#' @param predictedThreshA A two-element vector containing predicted lower and upper thresholds for density A (or NaN if not exists)
+#' @param predictedThreshB A two-element vector containing predicted lower and upper thresholds for density B (or NaN if not exists)
+#'
+#' @return A logical vector with the number cells entries, defining whether a cell is in the gated population or not
+#'
 #' @export
 gate <- function(sample, population, predictedThreshA, predictedThreshB, negate)
-# Gates a given population using provided thresholds
-#
-# Args:
-#   sample: The name of the sample for loading the parent population and true gate information.
-#   population: The name of the child population.
-#   predictedThreshA: A two-element vector containing predicted lower and upper thresholds for density A (or NaN if not exists)
-#   predictedThreshB: A two-element vector containing predicted lower and upper thresholds for density B (or NaN if not exists)
-#
-# Returns:
-#   A logical vector with the number cells entries, defining whether a cell is in the gated population or not
 {
     populationNormalized <- normalizePopulationName(population)
 

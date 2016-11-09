@@ -1,18 +1,18 @@
-# A helper function for the C-style printf() function.
+#' A helper function for the C-style printf() function.
 printf <- function(...) invisible(cat(sprintf(...)))
 
+#' Normalizes a population name.
+#'
+#' First, all '+' and '-' signs are converted to 'p' and 'n', respectively.
+#' Second, All non-characters and non-numbers are removed.
+#' Third, everything is converted to lower case.
+#'
+#' @param population The unnormalized population name string.
+#'
+#' @return The normalized population string.
+#'
 #' @export
 normalizePopulationName <- function(population)
-# Normalizes a population name.
-# First, all '+' and '-' signs are converted to 'p' and 'n', respectively.
-# Second, All non-characters and non-numbers are removed.
-# Third, everything is converted to lower case.
-#
-# Args:
-#   population: The unnormalized population name string.
-#
-# Returns:
-#   The normalized population string.
 {
     populationNormalized <- stringr::str_replace_all(population, '\\+', 'p')
     populationNormalized <- stringr::str_replace_all(populationNormalized, '-', 'n')
@@ -20,16 +20,15 @@ normalizePopulationName <- function(population)
     populationNormalized
 }
 
+#' Estimates a smoothed density from a given vector of numbers.
+#'
+#' @param data The numbers to calculated the density for.
+#' @param n Number of features for the density.
+#'
+#' @return The estimated density.
+#'
 #' @export
 estimateDensity <- function(data, n)
-# Estimates a smoothed density from a given vector of numbers.
-#
-# Args:
-#   data: The numbers to calculated the density for.
-#   n: Number of features for the density.
-#
-# Returns:
-#   The estimated density.
 {
   dens <- density(data[which(!is.na(data))], n = n)
   dens <- smooth.spline(dens$x, dens$y, spar=0.4)
@@ -37,17 +36,16 @@ estimateDensity <- function(data, n)
   return(dens)
 }
 
+#' Rotates FCS data by theta.
+#'
+#' @param data The flowFrame to rotate or the ecpression matrix.
+#' @param chans Only rotate the given channels.
+#' @param theta Amount of rotation to apply.
+#'
+#' @return A rotated version of the input.
+#'
 #' @export
 rotateData <- function(data, chans=NULL, theta=NULL)
-# Rotates FCS data by theta.
-#
-# Args:
-#   data: The flowFrame to rotate or the ecpression matrix.
-#   chans: Only rotate the given channels.
-#   theta: Amount of rotation to apply.
-#
-# Returns:
-#   A rotated version of the input.
 {
     if (class(data)== "flowFrame" & !is.null(chans))
     {
@@ -65,16 +63,15 @@ rotateData <- function(data, chans=NULL, theta=NULL)
     return(list(data=data,theta=theta))
 }
 
+#' Reads proportions for a given population and return the mean proportion.
+#'
+#' @param tr The LearningSet object to calculate the statistic for.
+#' @param population The population name.
+#'
+#' @return The mean proportion.
+#'
 #' @export
 getMeanProportion <- function(tr, population)
-# Reads proportions for a given population and return the mean proportion.
-#
-# Args:
-#   tr: The LearningSet object to calculate the statistic for.
-#   population: The population name.
-#
-# Returns:
-#   The mean proportion.
 {
     populationNormalized <- normalizePopulationName(population)
 
