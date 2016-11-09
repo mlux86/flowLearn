@@ -49,7 +49,7 @@ weighDtwDistances <- function(m, g = 0.025)
 }
 
 #' @export
-myDtw <- function(a, b, ...)
+dtwMain <- function(a, b, ...)
 # There is a global proxy function which modularizes the parameters for DTW to
 # ensure consistent use throughout flowLearn. To Change DTW parameters, change
 # this function.
@@ -93,7 +93,7 @@ dtwDistanceMatrices <- function(tr, cl)
     m <- parSapply(cl, 2:n, # start at 2 for upper triangle only
         function(i.1) 
         {
-            sapply(1:(i.1-1), function(i.2) myDtw(tr@densYchanA[i.1,], tr@densYchanA[i.2,], distance.only = T)$distance)
+            sapply(1:(i.1-1), function(i.2) dtwMain(tr@densYchanA[i.1,], tr@densYchanA[i.2,], distance.only = T)$distance)
         })
 
     dA <- matrix(0, n, n)
@@ -105,7 +105,7 @@ dtwDistanceMatrices <- function(tr, cl)
     m <- parSapply(cl, 2:n, # start at 2 for upper triangle only
         function(i.1) 
         {
-            sapply(1:(i.1-1), function(i.2) myDtw(tr@densYchanB[i.1,], tr@densYchanB[i.2,], distance.only = T)$distance)
+            sapply(1:(i.1-1), function(i.2) dtwMain(tr@densYchanB[i.1,], tr@densYchanB[i.2,], distance.only = T)$distance)
         })
 
     dB <- matrix(0, n, n)

@@ -11,7 +11,7 @@ alignThreshold <- function(densX, densY, refDensX, refDensY, refThreshold)
 # Returns:
 #   The predicted threshold in the test density.
 {
-    dtwObj <- myDtw(densY, refDensY)
+    dtwObj <- dtwMain(densY, refDensY)
 
     # find x index nearest to threshold in reference
 
