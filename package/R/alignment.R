@@ -8,7 +8,7 @@ dtwDistanceMatrix <- function(x, y)
 # Returns:
 #   A n-by-m matrix with pairwise euclidean distances.
 {
-    dist(x, y)
+    proxy::dist(x, y)
 }
 
 derivativeDtwDistanceMatrix <- function(x, y)
@@ -30,7 +30,8 @@ derivativeDtwDistanceMatrix <- function(x, y)
     difX <- c(difX[1], difX, difX[length(x)-2])
     difY <- sapply(2:(length(x)-1), function(i) (y[i] - y[i-1]) + ((y[i+1] - y[i-1]) / 2) / 2)
     difY <- c(difY[1], difY, difY[length(x)-2])                
-    dist(difX, difY)
+
+    proxy::dist(difX, difY)
 }
 
 weighDtwDistances <- function(m, g = 0.025)
@@ -44,7 +45,7 @@ weighDtwDistances <- function(m, g = 0.025)
 #   A matrix of the same size of the input matrix, containing weighted elements.
 {    
     n <- nrow(m)
-    w <- 1 / (1 + exp(-g * (as.matrix(dist(1:n)) - n / 2)))
+    w <- 1 / (1 + exp(-g * (as.matrix(proxy::dist(1:n)) - n / 2)))
     w * m
 }
 
@@ -64,7 +65,7 @@ dtwMain <- function(a, b, ...)
 {
     # dtw(a, b, ...)
 
-    ddtw <- dtw(derivativeDtwDistanceMatrix(a, b), step.pattern = typeIds, ...)
+    ddtw <- dtw::dtw(derivativeDtwDistanceMatrix(a, b), step.pattern = dtw::typeIds, ...)
 
     # When using derivative DTW, we set the original densities as query and
     # reference for easier visualization
@@ -90,7 +91,7 @@ dtwDistanceMatrices <- function(tr, cl)
 
     # channel A
 
-    m <- parSapply(cl, 2:n, # start at 2 for upper triangle only
+    m <- parallel::parSapply(cl, 2:n, # start at 2 for upper triangle only
         function(i.1) 
         {
             sapply(1:(i.1-1), function(i.2) dtwMain(tr@densYchanA[i.1,], tr@densYchanA[i.2,], distance.only = T)$distance)
@@ -102,7 +103,7 @@ dtwDistanceMatrices <- function(tr, cl)
 
     # channel B
 
-    m <- parSapply(cl, 2:n, # start at 2 for upper triangle only
+    m <- parallel::parSapply(cl, 2:n, # start at 2 for upper triangle only
         function(i.1) 
         {
             sapply(1:(i.1-1), function(i.2) dtwMain(tr@densYchanB[i.1,], tr@densYchanB[i.2,], distance.only = T)$distance)

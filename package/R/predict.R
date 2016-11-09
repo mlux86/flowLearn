@@ -47,12 +47,8 @@ selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
 # Returns:
 #   A list with the following keys:
 #   	testIdx: Test indices not containing the selected prototype indices.
-#       trainIdxA: Prototype indices for channel A.
-#       trainIdxB: Prototype indices for channel B.
-#       labelsA: A vector of length equal to the number of samples and containg the 
-#                prototype index for each test sample (channel A).
-#       labelsB: A vector of length equal to the number of samples and containg the 
-#                prototype index for each test sample (channel B).
+#       prototypesA: Prototype indices for channel A.
+#       prototypesB: Prototype indices for channel B.
 {
 
 	if(numTrain %% 2 != 0)
@@ -63,6 +59,8 @@ selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
 	n <- nrow(tr@densYchanA)
 
 	K <- numTrain / 2 # for A and B
+
+	# random training indices
 
     if(!is.nan(seed))
     {
@@ -75,6 +73,13 @@ selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
     }	
 	trainIdxB <- sample(n, K)
 
+	# test indices don't contain training indices
+
+	trainIdx <- union(trainIdxA, trainIdxB)
+	testIdx <- setdiff(1:n, trainIdx)
+
+	# find nearest prototype assignments for each sample
+
 	if(K > 1)
 	{
 	    labelsA <- t(apply(dA[,trainIdxA], 1, order))[, 1]
@@ -85,17 +90,14 @@ selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
 	    labelsB <- matrix(1, n, 1)
 	}
 
-	testIdxA <- (1:n)[-trainIdxA]
-	testIdxB <- (1:n)[-trainIdxB]
+	prototypesA <- trainIdxA[labelsA]
+	prototypesB <- trainIdxB[labelsB]
 
-	trainIdx <- union(trainIdxA, trainIdxB)
-	testIdx <- setdiff(1:n, trainIdx)
-
-	return(list(testIdx = testIdx, trainIdxA = trainIdxA, trainIdxB = trainIdxB, labelsA = labelsA, labelsB = labelsB))
+	return(list(testIdx = testIdx, prototypesA = prototypesA[testIdx], prototypesB = prototypesB[testIdx]))
 
 }
 
-#' @export
+# #' @export
 selectFixedPrototypes <- function(tr, dA, dB, trainIdxA, trainIdxB)
 # Selects prototypes for a given set of samples.
 # Fixes the prototype indices and only calculates test indices to be used.
@@ -110,12 +112,8 @@ selectFixedPrototypes <- function(tr, dA, dB, trainIdxA, trainIdxB)
 # Returns:
 #   A list with the following keys:
 #   	testIdx: Test indices not containing the selected prototype indices.
-#       trainIdxA: Prototype indices for channel A.
-#       trainIdxB: Prototype indices for channel B.
-#       labelsA: A vector of length equal to the number of samples and containg the 
-#                prototype index for each test sample (channel A).
-#       labelsB: A vector of length equal to the number of samples and containg the 
-#                prototype index for each test sample (channel B).
+#       prototypesA: Prototype indices for channel A.
+#       prototypesB: Prototype indices for channel B.
 {
 	n <- nrow(tr@densYchanA)
 
@@ -125,6 +123,13 @@ selectFixedPrototypes <- function(tr, dA, dB, trainIdxA, trainIdxB)
 		stop('Number of prototypes in both channels must be the same!')
 	}
 
+	# test indices don't contain training indices
+
+	trainIdx <- union(trainIdxA, trainIdxB)
+	testIdx <- setdiff(1:n, trainIdx)
+
+	# find nearest prototype assignments for each sample
+
 	if(K > 1)
 	{
 	    labelsA <- t(apply(dA[,trainIdxA], 1, order))[, 1]
@@ -133,15 +138,12 @@ selectFixedPrototypes <- function(tr, dA, dB, trainIdxA, trainIdxB)
 	{
 	    labelsA <- matrix(1, n, 1)
 	    labelsB <- matrix(1, n, 1)
-	}	
+	}
 
-	testIdxA <- (1:n)[-trainIdxA]
-	testIdxB <- (1:n)[-trainIdxB]
+	prototypesA <- trainIdxA[labelsA]
+	prototypesB <- trainIdxB[labelsB]
 
-	trainIdx <- union(trainIdxA, trainIdxB)
-	testIdx <- setdiff(1:n, trainIdx)
-
-	return(list(testIdx = testIdx, trainIdxA = trainIdxA, trainIdxB = trainIdxB, labelsA = labelsA, labelsB = labelsB))
+	return(list(testIdx = testIdx, prototypesA = prototypesA[testIdx], prototypesB = prototypesB[testIdx]))
 }
 
 #' @export
@@ -162,39 +164,46 @@ predictThresholds <- function(tr, selectedPrototypes)
 	predictedThreshA <- matrix(NaN, numTest, 2)
 	predictedThreshB <- matrix(NaN, numTest, 2)
 
-	cl <- makeCluster(detectCores(), type = "FORK")
+	cl <- parallel::makeCluster(4, type = "FORK")
 
 	tryCatch({
 
 		if(!is.nan(tr@threshA[1,1]))
 		{
-		    predictedThreshA[, 1] <- parSapply(cl, selectedPrototypes$testIdx, function(i) 
+		    predictedThreshA[, 1] <- parallel::parSapply(cl, 1:numTest, function(i) 
 		    {
-		        protoIdx <- selectedPrototypes$trainIdxA[selectedPrototypes$labelsA[i]]
+		    	testIdx <- selectedPrototypes$testIdx[i]
+		        protoIdx <- selectedPrototypes$prototypesA[i]
 		        alignThreshold(tr@densXchanA[i,], tr@densYchanA[i,], tr@densXchanA[protoIdx,], tr@densYchanA[protoIdx,], tr@threshA[protoIdx, 1])
 		    })
 		}
 		if(!is.nan(tr@threshA[1,2]))
 		{
-		    predictedThreshA[, 2] <- parSapply(cl, selectedPrototypes$testIdx, function(i) 
+		    predictedThreshA[, 2] <- parallel::parSapply(cl, 1:numTest, function(i) 
 		    {
-		        protoIdx <- selectedPrototypes$trainIdxA[selectedPrototypes$labelsA[i]]
+		    	testIdx <- selectedPrototypes$testIdx[i]
+		        protoIdx <- selectedPrototypes$prototypesA[i]
+		        print(protoIdx)
 		        alignThreshold(tr@densXchanA[i,], tr@densYchanA[i,], tr@densXchanA[protoIdx,], tr@densYchanA[protoIdx,], tr@threshA[protoIdx, 2])
 		    })
 		}
 		if(!is.nan(tr@threshB[1,1]))
 		{
-		    predictedThreshB[, 1] <- parSapply(cl, selectedPrototypes$testIdx, function(i) 
+		    predictedThreshB[, 1] <- parallel::parSapply(cl, 1:numTest, function(i) 
 		    {
-		        protoIdx <- selectedPrototypes$trainIdxB[selectedPrototypes$labelsB[i]]
+		    	testIdx <- selectedPrototypes$testIdx[i]
+		        protoIdx <- selectedPrototypes$prototypesB[i]
+		        print(protoIdx)
 		        alignThreshold(tr@densXchanB[i,], tr@densYchanB[i,], tr@densXchanB[protoIdx,], tr@densYchanB[protoIdx,], tr@threshB[protoIdx, 1])
 		    })
 		}
 		if(!is.nan(tr@threshB[1,2]))
 		{
-		    predictedThreshB[, 2] <- parSapply(cl, selectedPrototypes$testIdx, function(i) 
+		    predictedThreshB[, 2] <- parallel::parSapply(cl, 1:numTest, function(i) 
 		    {
-		        protoIdx <- selectedPrototypes$trainIdxB[selectedPrototypes$labelsB[i]]
+		    	testIdx <- selectedPrototypes$testIdx[i]
+		        protoIdx <- selectedPrototypes$prototypesB[i]
+		        print(protoIdx)
 		        alignThreshold(tr@densXchanB[i,], tr@densYchanB[i,], tr@densXchanB[protoIdx,], tr@densYchanB[protoIdx,], tr@threshB[protoIdx, 2])
 		    })
 		}
@@ -204,7 +213,7 @@ predictThresholds <- function(tr, selectedPrototypes)
 	}, error = function(e) {
 		print(e)
 	}, finally = {
-		stopCluster(cl)	
+		parallel::stopCluster(cl)	
 	})
 
 }

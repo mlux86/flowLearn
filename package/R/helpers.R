@@ -14,9 +14,9 @@ normalizePopulationName <- function(population)
 # Returns:
 #   The normalized population string.
 {
-    populationNormalized <- str_replace_all(population, '\\+', 'p')
-    populationNormalized <- str_replace_all(populationNormalized, '-', 'n')
-    populationNormalized <- tolower(str_replace_all(populationNormalized, '[^a-zA-Z0-9]+', ''))
+    populationNormalized <- stringr::str_replace_all(population, '\\+', 'p')
+    populationNormalized <- stringr::str_replace_all(populationNormalized, '-', 'n')
+    populationNormalized <- tolower(stringr::str_replace_all(populationNormalized, '[^a-zA-Z0-9]+', ''))
     populationNormalized
 }
 
@@ -80,10 +80,10 @@ getMeanProportion <- function(tr, population)
 
     n <- length(tr[[populationNormalized]]@samples)
 
-    cl <- makeCluster(detectCores(), type = "FORK")
+    cl <- parallel::makeCluster(parallel::detectCores(), type = "FORK")
 
     tryCatch({
-        props <- t(parSapply(cl, 1:n, function(i) 
+        props <- t(parallel::parSapply(cl, 1:n, function(i) 
         {
             tg <- readRDS(paste0('trainingFiles/', tr[[populationNormalized]]@samples[[i]]))
 
@@ -96,6 +96,6 @@ getMeanProportion <- function(tr, population)
     }, error = function(e) {
         print(e)
     }, finally = {
-        stopCluster(cl) 
+        parallel::stopCluster(cl) 
     }) 
 }

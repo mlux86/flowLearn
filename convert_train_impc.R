@@ -4,6 +4,7 @@ library(stringr)
 library(flowCore)
 library(flowDensity)
 library(flowLearn)
+library(parallel)
 
 source("flowLearn.R")
 

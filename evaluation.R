@@ -36,14 +36,13 @@ evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predi
 #   A list with keys meanPerf and medianPerf, each containing
 #   5-element vectors with the mean/median precision, recall, f1 scores, proportions, and predicted proportions.
 {
-    # cl <- makeCluster(detectCores(), type = "FORK")
-    cl <- makeCluster(4, type = "FORK")
+    cl <- parallel::makeCluster(4, type = "FORK")
 
     tryCatch({
 
         numTest <- length(testIdx)
 
-        perf <- t(parSapply(cl, 1:numTest, function(i) 
+        perf <- t(parallel::parSapply(cl, 1:numTest, function(i) 
         {
             f1Score(tr@samples[[testIdx[i]]], population, predictedThreshA[i,], predictedThreshB[i,])
         }))
@@ -58,7 +57,7 @@ evaluatePerformance <- function(tr, population, testIdx, predictedThreshA, predi
     }, error = function(e) {
         print(e)
     }, finally = {
-        stopCluster(cl) 
+        parallel::stopCluster(cl) 
     })    
 }
 

@@ -13,7 +13,7 @@ gate <- function(sample, population, predictedThreshA, predictedThreshB, negate)
 {
     populationNormalized <- normalizePopulationName(population)
 
-    fcs.name <- str_replace(sample, '\\.rds', '')
+    fcs.name <- stringr::str_replace(sample, '\\.rds', '')
     exprs <- readRDS(paste('trainingFiles/fcs/', fcs.name, '.', populationNormalized, '.parent.fcs.rds', sep = ''))
 
     predictedGateAssignments <- matrix(T, nrow(exprs), 1)
