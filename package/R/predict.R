@@ -13,7 +13,7 @@ alignThreshold <- function(densX, densY, refDensX, refDensY, refThreshold)
 
     # find x index nearest to threshold in reference
 
-    nearestRefXIdx <- which.min(abs( refDensX - refThreshold ))    
+    nearestRefXIdx <- which.min(abs( refDensX - refThreshold ))
 
     # identify mapped indexes on aligned density
 
@@ -70,7 +70,7 @@ selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
     if(!is.nan(seed))
     {
         set.seed(seed + 1)
-    }	
+    }
 	trainIdxB <- sample(n, K)
 
 	# test indices don't contain training indices
@@ -84,7 +84,7 @@ selectPrototypes <- function(tr, dA, dB, numTrain, seed = NaN)
 	{
 	    labelsA <- t(apply(dA[,trainIdxA], 1, order))[, 1]
 	    labelsB <- t(apply(dB[,trainIdxB], 1, order))[, 1]
-	} else 
+	} else
 	{
 	    labelsA <- matrix(1, n, 1)
 	    labelsB <- matrix(1, n, 1)
@@ -136,7 +136,7 @@ selectFixedPrototypes <- function(tr, dA, dB, trainIdxA, trainIdxB)
 	{
 	    labelsA <- t(apply(dA[,trainIdxA], 1, order))[, 1]
 	    labelsB <- t(apply(dB[,trainIdxB], 1, order))[, 1]
-	} else 
+	} else
 	{
 	    labelsA <- matrix(1, n, 1)
 	    labelsB <- matrix(1, n, 1)
@@ -164,6 +164,9 @@ predictThresholds <- function(tr, selectedPrototypes)
 {
 	numTest <- length(selectedPrototypes$testIdx)
 
+    # print(numTest)
+    # print(selectedPrototypes)
+
 	predictedThreshA <- matrix(NaN, numTest, 2)
 	predictedThreshB <- matrix(NaN, numTest, 2)
 
@@ -174,41 +177,46 @@ predictThresholds <- function(tr, selectedPrototypes)
 
 		if(!is.nan(tr@threshA[1,1]))
 		{
-		    predictedThreshA[, 1] <- parallel::parSapply(cl, 1:numTest, function(i) 
+		    predictedThreshA[, 1] <- parallel::parSapply(cl, 1:numTest, function(i)
 		    {
 		    	testIdx <- selectedPrototypes$testIdx[i]
 		        protoIdx <- selectedPrototypes$prototypesA[i]
-		        alignThreshold(tr@densXchanA[i,], tr@densYchanA[i,], tr@densXchanA[protoIdx,], tr@densYchanA[protoIdx,], tr@threshA[protoIdx, 1])
+                # print(testIdx)
+                # print(protoIdx)
+		        alignThreshold(tr@densXchanA[testIdx,], tr@densYchanA[testIdx,], tr@densXchanA[protoIdx,], tr@densYchanA[protoIdx,], tr@threshA[protoIdx, 1])
 		    })
 		}
 		if(!is.nan(tr@threshA[1,2]))
 		{
-		    predictedThreshA[, 2] <- parallel::parSapply(cl, 1:numTest, function(i) 
+		    predictedThreshA[, 2] <- parallel::parSapply(cl, 1:numTest, function(i)
 		    {
 		    	testIdx <- selectedPrototypes$testIdx[i]
 		        protoIdx <- selectedPrototypes$prototypesA[i]
-		        print(protoIdx)
-		        alignThreshold(tr@densXchanA[i,], tr@densYchanA[i,], tr@densXchanA[protoIdx,], tr@densYchanA[protoIdx,], tr@threshA[protoIdx, 2])
+                # print(testIdx)
+                # print(protoIdx)
+		        alignThreshold(tr@densXchanA[testIdx,], tr@densYchanA[testIdx,], tr@densXchanA[protoIdx,], tr@densYchanA[protoIdx,], tr@threshA[protoIdx, 2])
 		    })
 		}
 		if(!is.nan(tr@threshB[1,1]))
 		{
-		    predictedThreshB[, 1] <- parallel::parSapply(cl, 1:numTest, function(i) 
+		    predictedThreshB[, 1] <- parallel::parSapply(cl, 1:numTest, function(i)
 		    {
 		    	testIdx <- selectedPrototypes$testIdx[i]
 		        protoIdx <- selectedPrototypes$prototypesB[i]
-		        print(protoIdx)
-		        alignThreshold(tr@densXchanB[i,], tr@densYchanB[i,], tr@densXchanB[protoIdx,], tr@densYchanB[protoIdx,], tr@threshB[protoIdx, 1])
+                # print(testIdx)
+                # print(protoIdx)
+		        alignThreshold(tr@densXchanB[testIdx,], tr@densYchanB[testIdx,], tr@densXchanB[protoIdx,], tr@densYchanB[protoIdx,], tr@threshB[protoIdx, 1])
 		    })
 		}
 		if(!is.nan(tr@threshB[1,2]))
 		{
-		    predictedThreshB[, 2] <- parallel::parSapply(cl, 1:numTest, function(i) 
+		    predictedThreshB[, 2] <- parallel::parSapply(cl, 1:numTest, function(i)
 		    {
 		    	testIdx <- selectedPrototypes$testIdx[i]
 		        protoIdx <- selectedPrototypes$prototypesB[i]
-		        print(protoIdx)
-		        alignThreshold(tr@densXchanB[i,], tr@densYchanB[i,], tr@densXchanB[protoIdx,], tr@densYchanB[protoIdx,], tr@threshB[protoIdx, 2])
+                # print(testIdx)
+                # print(protoIdx)
+		        alignThreshold(tr@densXchanB[testIdx,], tr@densYchanB[testIdx,], tr@densXchanB[protoIdx,], tr@densYchanB[protoIdx,], tr@threshB[protoIdx, 2])
 		    })
 		}
 
@@ -217,7 +225,7 @@ predictThresholds <- function(tr, selectedPrototypes)
 	}, error = function(e) {
 		print(e)
 	}, finally = {
-		parallel::stopCluster(cl)	
+		parallel::stopCluster(cl)
 	})
 
 }

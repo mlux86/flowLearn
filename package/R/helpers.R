@@ -1,6 +1,3 @@
-#' A helper function for the C-style printf() function.
-printf <- function(...) invisible(cat(sprintf(...)))
-
 #' Normalizes a population name.
 #'
 #' First, all '+' and '-' signs are converted to 'p' and 'n', respectively.
