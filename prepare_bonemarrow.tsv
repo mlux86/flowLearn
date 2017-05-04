@@ -1,0 +1,17 @@
+population	parent	channelA	channelB	gateALow	gateAHigh	gateBLow	gateBHigh	negate
+notgranulocytepre	cd45	10	8	NaN	10	NaN	NaN	FALSE
+granulocytepre	cd45	10	8	NaN	10	NaN	NaN	TRUE
+cd3tcell	notgranulocytepre	18	16	NaN	11	12	NaN	FALSE
+notcd3tcell	notgranulocytepre	18	16	NaN	11	12	NaN	TRUE
+plasma	notcd3tcell	15	18	13	NaN	NaN	11	FALSE
+notplasma	notcd3tcell	15	18	13	NaN	NaN	11	TRUE
+bcell	notplasma	18	13	11	NaN	NaN	NaN	FALSE
+myeloid	notplasma	18	13	11	NaN	NaN	NaN	TRUE
+cd43p	bcell	18	8	NaN	NaN	15	NaN	FALSE
+cd43n	bcell	18	8	NaN	NaN	15	NaN	TRUE
+hfa	cd43p	9	17	NaN	16	NaN	17	FALSE
+hfb	cd43p	9	17	16	NaN	NaN	17	FALSE
+hfc	cd43p	9	17	16	NaN	17	NaN	FALSE
+hfd	cd43n	12	7	NaN	18	NaN	19	FALSE
+hfe	cd43n	12	7	18	Nan	NaN	19	FALSE
+hff	cd43n	12	7	NaN	NaN	19	NaN	FALSE
