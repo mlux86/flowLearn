@@ -136,22 +136,50 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
 }
 
 
-flPlotPredictions <- function(densdat, pop, chan, numProto)
+flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = F)
 {
     nSamples <- length(unique(densdat@data$fcs))
 
     dd <- flFind(densdat, sprintf('population == "%s" & channelIdx == %d', pop, chan))
     protoIdx <- flSelectPrototypes(dd, numProto)
     ddp <- flPredictThresholds(dd, protoIdx)    
-
     D <- as.matrix(dist(flGetDensity(dd)$y))
+
+    if(!oneplot)
+    {
+        graphics.off()
+        dev.new()
+        dev.new()
+    }
+
     for (i in 1:nSamples)
     {
-        par(mfrow=c(2,1))
+        if(oneplot)
+        {
+            par(mfrow=c(2,1))
+        } else {
+            dev.set(dev.list()[[1]])
+        }
         flPlotDensThresh(flGetDensity(flAt(dd, i)), flGetGate(flAt(dd, i)), flGetGate(flAt(ddp, i)))
+        if(save)
+        {
+            png('/tmp/prediction.png', width = 1000, height = 750, res = 120)
+            flPlotDensThresh(flGetDensity(flAt(dd, i)), flGetGate(flAt(dd, i)), flGetGate(flAt(ddp, i)))
+            dev.off()
+        }
         j <- order(D[protoIdx, i])[chan]
         d <- flDtwMain(flGetDensity(flAt(dd, i)), flGetDensity(flAt(dd, protoIdx[j])))
-        plot(d, type = 'twoway', offset = .001, match.indices = 100)
+        if(!oneplot)
+        {
+            dev.set(dev.list()[[2]])
+        }
+        plot(d, type = 'twoway', lwd = 2, offset = 0.3, match.indices = 100)
+        if(save)
+        {
+            png('/tmp/alignment.png', width = 1000, height = 750, res = 120)
+            plot(d, type = 'twoway', lwd = 2, offset = 0.3, match.indices = 100)
+            dev.off()
+        }
         readline()
     }
 }

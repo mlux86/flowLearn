@@ -126,12 +126,18 @@ flDerivativeDtwDistanceMatrix <- function(densA, densB)
     }
 
     difA <- sapply(2:(lenA-1), function(i) (densA$y[i] - densA$y[i-1]) + ((densA$y[i+1] - densA$y[i-1]) / 2) / 2)
-    # difA <- sapply(2:(lenA-1), function(i) (densA$y[i+1] - densA$y[i-1]) / (densA$x[i+1] - densA$x[i-1]))
-    difA <- c(difA[1], difA, difA[lenA-2])
+    difA <- c(difA[1], difA, difA[lenA-2])    
 
     difB <- sapply(2:(lenB-1), function(i) (densB$y[i] - densB$y[i-1]) + ((densB$y[i+1] - densB$y[i-1]) / 2) / 2)
-    # difB <- sapply(2:(lenB-1), function(i) (densB$x[i+1] - densB$y[i-1]) / (densB$x[i+1] - densB$x[i-1]))
     difB <- c(difB[1], difB, difB[lenB-2])
+    
+    # h <- 1
+
+    # difA <- sapply((h+1):(lenA-h), function(i) (densA$y[i+h] - densA$y[i-h]) / (2 * h))
+    # difA <- c(difA[1], difA, difA[lenA-2])
+
+    # difB <- sapply((h+1):(lenB-h), function(i) (densB$y[i+h] - densB$y[i-h]) / (2 * h))
+    # difB <- c(difB[1], difB, difB[lenB-2])
 
     proxy::dist(difA, difB)
 }
@@ -150,11 +156,11 @@ flDtwMain <- function(densA, densB, ...)
 #' @export
 flSelectPrototypes <- function(densdat, k)
 {	
-	D <- dist(flGetDensity(densdat)$y)
-
+    D <- dist(flGetDensity(densdat)$y, method = 'manhattan')
+  
     protoIdx <- cluster::pam(D, k = k)$medoids
-
-	return(protoIdx)
+  
+    return(protoIdx)
 }
 
 #' @export
