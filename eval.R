@@ -123,7 +123,8 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
     f1Mean <- apply(dfEval, 2, function(x) { mean(x, na.rm = T) } )
 
     p <- ggplot(stack(dfEval), aes(x = ind, y = values)) +
-        geom_boxplot() +
+        stat_boxplot(geom = 'errorbar', width = 0.25) +
+        geom_boxplot(outlier.shape = 20, outlier.size = 0.1) +
         scale_y_continuous(limits=c(0,1), breaks=seq(0,1,by=0.05)) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
         labs(title = paste0('Sample f1 scores using ', numProtoPerChannel, ' prototype(s) per channel (n = ', nSamples, ")")) +
