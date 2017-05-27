@@ -201,7 +201,7 @@ flPredictThresholds <- function(densdat, protoIdx)
 	testIdx <- setdiff(1:n, protoIdx)
 	nTest <- length(testIdx)
 
-	D <- as.matrix(dist(flGetDensity(densdat)$y))
+	D <- as.matrix(dist(flGetDensity(densdat)$y, method = 'manhattan'))
 
 	cl <- parallel::makeCluster(parallel::detectCores(), type = "FORK")
 
