@@ -120,9 +120,13 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
     }
 
     dfEval <- as.data.frame(f1s)
-    colnames(dfEval) <- populations
+    colnames(dfEval) <- populations    
+    dfEvalTp <- as.data.frame(tp)
+    colnames(dfEvalTp) <- populations    
+    dfEvalPp <- as.data.frame(pp)
+    colnames(dfEvalPp) <- populations  
 
-    save(dfEval, numProtoPerChannel, file = sprintf('results/eval_%s_%02d.RData', datasetName, numProtoPerChannel))
+    save(dfEval, dfEvalTp, dfEvalPp, numProtoPerChannel, file = sprintf('results/eval_%s_%02d.RData', datasetName, numProtoPerChannel))
 
     # f1Median <- apply(dfEval, 2, function(x) { median(x, na.rm = T) } )
     # f1Mean <- apply(dfEval, 2, function(x) { mean(x, na.rm = T) } )
@@ -138,13 +142,7 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
 
     print(p)
 
-    ggsave(sprintf('results/eval_f1_%s_%02d.png', datasetName, numProtoPerChannel))  
-
-
-    dfEvalTp <- as.data.frame(tp)
-    colnames(dfEvalTp) <- populations    
-    dfEvalPp <- as.data.frame(pp)
-    colnames(dfEvalPp) <- populations    
+    ggsave(sprintf('results/eval_f1_%s_%02d.png', datasetName, numProtoPerChannel))    
 
     s1 <- stack(dfEvalTp)
     s1$proportionType = 'true'
