@@ -1,6 +1,7 @@
 library(openCyto)
 library(readxl)
 library(flowLearn)
+library(parallel)
 
 printf <- function(...) invisible(print(sprintf(...)))
 
@@ -24,10 +25,10 @@ getParentIndices <- function(gs, popPath)
 	which(getIndices(gs, getParent(gs, popPath))) %in% which(getIndices(gs, popPath))
 }
 
-flowcapPath <- '/home/mlux/immunespace/flowCAP-III-data/'
+flowcapPath <- '/mnt/data/immunespace/flowCAP-III-data/'
 gslistPath <- paste0(flowcapPath, 'gating/gated_data/manual/')
 fcsPath <- paste0(flowcapPath, 'fcs/SeraCare/')
-p <- '/home/mlux/flowlearn.traindat.flowcap.'
+p <- '/home/mlux/flowlearn.traindat/flowlearn.traindat.flowcap.'
 
 sampleExcel <- read_excel(paste0(fcsPath, '000_files.xlsx'))
 
@@ -39,7 +40,6 @@ cl <- parallel::makeCluster(parallel::detectCores(), type = "FORK", outfile = ""
 parSapply(cl, panels, function(panel) 
 {
 
-	dir.create(p, showWarnings = FALSE)
 	dir.create(paste0(p, panel), showWarnings = FALSE)
 	dir.create(paste0(p, panel, '/eval'), showWarnings = FALSE)
 	
@@ -103,7 +103,9 @@ parSapply(cl, panels, function(panel)
 				densdat <- flAdd(densdat, fcsFilename, npn, 1, densA$x, densA$y, thresholds$thresholdALow, thresholds$thresholdAHigh)
 				densdat <- flAdd(densdat, fcsFilename, npn, 2, densB$x, densB$y, thresholds$thresholdBLow, thresholds$thresholdBHigh)
 
-				evaldat <- list(parentFrame = parentFrame@exprs[, channelIndices], indices = getParentIndices(gs, popPath), negate = F)
+				neg <- npn == 'live'
+
+				evaldat <- list(parentFrame = parentFrame@exprs[, channelIndices], indices = getParentIndices(gs, popPath), negate = neg)
 
 				saveRDS(evaldat, file = paste0(p, panel, '/eval/', fcsFilename, '.', npn, '.eval.rds'))
 		    }			
