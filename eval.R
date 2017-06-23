@@ -73,6 +73,12 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
 
     load(paste0(flowLearnEvaluationFolder, 'train_data.RData'))
 
+    if(file.exists('popmap.csv'))
+    {
+        pm <- read.csv('popmap.csv', stringsAsFactors = F)
+        rownames(pm) <- pm$normalized
+    }
+
     fcsFiles <- unique(densdat@data$fcs)
     nSamples <- length(fcsFiles)
     populations <- as.character(unique(densdat@data$population))
@@ -89,7 +95,6 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
     {
 
         population <- populations[i]
-        print(population)
 
         tryCatch({
 
@@ -119,6 +124,12 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
         })
     }
 
+    for(ip in 1:length(populations))
+    {
+        normpop <- populations[[ip]]
+        populations[[ip]] <- pm[normpop,]$original
+    }
+
     dfEval <- as.data.frame(f1s)
     colnames(dfEval) <- populations    
     dfEvalTp <- as.data.frame(tp)
@@ -128,21 +139,19 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
 
     save(dfEval, dfEvalTp, dfEvalPp, numProtoPerChannel, file = sprintf('results/eval_%s_%02d.RData', datasetName, numProtoPerChannel))
 
-    # f1Median <- apply(dfEval, 2, function(x) { median(x, na.rm = T) } )
-    # f1Mean <- apply(dfEval, 2, function(x) { mean(x, na.rm = T) } )
-
     p <- ggplot(stack(dfEval), aes(x = ind, y = values)) +
         stat_boxplot(geom = 'errorbar', width = 0.25) +
         geom_boxplot(width = 0.3, outlier.shape = 20, outlier.size = 0.1) +
         scale_y_continuous(limits=c(0,1), breaks=seq(0,1,by=0.05)) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-        labs(title = paste0('Sample f1 scores using ', numProtoPerChannel, ' prototype(s) per channel (n = ', nSamples, ")")) +
+        # labs(title = paste0('Sample f1 scores using ', numProtoPerChannel, ' prototype(s) per channel (n = ', nSamples, ")")) +
         xlab('Population') +
-        ylab('f1-score(sample)')
+        ylab('F1-score')
 
     print(p)
 
     ggsave(sprintf('results/eval_f1_%s_%02d.png', datasetName, numProtoPerChannel))    
+    ggsave(sprintf('results/eval_f1_%s_%02d.eps', datasetName, numProtoPerChannel))    
 
     s1 <- stack(dfEvalTp)
     s1$proportionType = 'true'
@@ -155,13 +164,14 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
         geom_boxplot(width = 0.5, outlier.shape = 20, outlier.size = 0.1, notch = T) +
         scale_y_continuous(limits=c(0,1), breaks=seq(0,1,by=0.05)) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-        labs(title = paste0('Sample proportions using ', numProtoPerChannel, ' prototype(s) per channel (n = ', nSamples, ")")) +
+        # labs(title = paste0('Sample proportions using ', numProtoPerChannel, ' prototype(s) per channel (n = ', nSamples, ")")) +
         xlab('Population') +
-        ylab('f1-score(sample)')
+        ylab('F1-score')
 
     print(p2)
 
     ggsave(sprintf('results/eval_proportion_%s_%02d.png', datasetName, numProtoPerChannel))        
+    ggsave(sprintf('results/eval_proportion_%s_%02d.eps', datasetName, numProtoPerChannel))        
 }
 
 

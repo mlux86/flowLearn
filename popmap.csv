@@ -1,0 +1,66 @@
+normalized,original
+38ndrn,38-DR-
+38ndrp,38-DR+
+38pdrn,38+DR-
+bcell,B-cell
+ccr4ncd45ron,CCR4-CD45RO-
+ccr4ncd45rop,CCR4-CD45RO+
+ccr4nhladrn,CCR4-HLADR-
+ccr4nhladrp,CCR4-HLADR+
+ccr4pcd45ron,CCR4+CD45RP-
+ccr4pcd45rop,CCR4+CD45RP+
+ccr4phladrn,CCR4+HLADR-
+ccr4phladrp,CCR4+HLADR+
+cd11cncd123n,CD11C-CD123-
+cd11cncd123p,CD11C-CD123+
+cd11cpcd123n,CD11C+CD123-
+cd11cpcd123p,CD11C+CD123+
+cd14pcd16p,CD14+CD16+
+cd16ncd56n,CD16-CD56-
+cd16ncd56p,CD16-CD56+
+cd16pcd56n,CD16+CD56-
+cd16pcd56p,CD14+CD56+
+cd19,CD19
+cd20,CD20
+cd3,CD3
+cd3tcell,CD3 T-cell
+cd4,CD4
+cd43n,CD43-
+cd43p,CD43+
+cd4activated,CD4 Activated
+cd4centralmemory,CD4 Central Memory
+cd4effector,CD4 Effector
+cd4effectormemory,CD4 Effector Memory
+cd4naive,CD4 Naive
+cd8,CD8
+cd8activated,CD8 Activated
+cd8centralmemory,CD8 Central Memory
+cd8effector,CD8 Effector
+cd8effectormemory,CD8 Effector Memory
+cd8naive,CD8 Naive
+dnt,DPT
+dpt,DNT
+granulocytepre,Granulocyte Pre
+hfa,HFA
+hfb,HFB
+hfc,HFC
+hfd,HFD
+hfe,HFE
+hff,HFF
+hladrp,HLADR+
+igdncd27n,IGD-CD27-
+linncd14n,Lin-CD14-
+linncd14p,Lin-CD14+
+live,Live
+memoryigdn,Memory IGD-
+memoryigdp,Memory IGD+
+monocytes,Monocytes
+myeloid,Myeloid
+naive,Naive
+notcd3tcell,not(CD3 T-cells)
+notgranulocytepre,not(Granulocyte Pre)
+notplasma,not(Plasma)
+plasma,Plasma
+plasmablasts,Plasmablasts
+transitional,Transitional
+
