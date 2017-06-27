@@ -137,6 +137,11 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
     dfEvalPp <- as.data.frame(pp)
     colnames(dfEvalPp) <- populations  
 
+    nanidx <- which(sapply(dfEval, function(x) { sum(is.nan(x)) == nrow(dfEval) }))
+    dfEval <- dfEval[, -nanidx]
+    dfEvalTp <- dfEvalTp[, -nanidx]
+    dfEvalPp <- dfEvalPp[, -nanidx]
+
     save(dfEval, dfEvalTp, dfEvalPp, numProtoPerChannel, file = sprintf('results/eval_%s_%02d.RData', datasetName, numProtoPerChannel))
 
     p <- ggplot(stack(dfEval), aes(x = ind, y = values)) +
