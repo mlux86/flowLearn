@@ -2,6 +2,8 @@ library(stringr)
 library(flowLearn)
 library(FlowSOM)
 library(parallel)
+library(plyr)
+library(ggplot2)
 
 source('helper_match_evaluate_multiple.R')
 
@@ -9,7 +11,6 @@ printf <- function(...) invisible(print(sprintf(...)))
 
 bonemarrowPath <- '/mnt/data/BM_Panel/'
 cd45Path <- paste0(bonemarrowPath, 'CleanFiles-CD45/')
-p <- '/home/mlux/flowlearn.traindat.impc.bonemarrow/'
 
 
 dir.create(p, showWarnings = FALSE)
@@ -138,9 +139,6 @@ f1s <- parLapply(cl, filenames, function(fname)
         z <- helper_match_evaluate_multiple(lblFlowSOM, lblCorrect)
 
         f1 <- z$F1
-        # names(f1) <- popNamesCorrect
-        # print(f1)
-        # print(paste0(z$mean_F1, "  ----------"))
 
         popNamesCorrect[popNamesCorrect == ""] <- "ungated"
         names(f1) <- popNamesCorrect
@@ -156,5 +154,26 @@ f1s <- parLapply(cl, filenames, function(fname)
 
 })
 
-save(f1s, file = 'f1s.RData')
+l <- laply(f1s, length)
+f1s <- as.data.frame(do.call('rbind', f1s[l == 11]))
 
+colnames(f1s) <- c("ungated", "CD3 T-cell", "Granulocyte Pre", "HFA", "HFB", "HFC", "HFD", "HFE", "HFF", "Myeloid", "Plasma")
+
+print(paste0("Samples with wrong number of clusters: ", sum(l != 11)))
+
+save(f1s, file = 'eval_flowsom_f1.RData')
+
+f1s <- f1s[-1]
+
+p <- ggplot(stack(f1s), aes(x = ind, y = values)) +
+    stat_boxplot(geom = 'errorbar', width = 0.25) +
+    geom_boxplot(width = 0.3, outlier.shape = 20, outlier.size = 0.1) +
+    scale_y_continuous(limits=c(0,1), breaks=seq(0,1,by=0.05)) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    xlab('Population') +
+    ylab('F1-score')
+
+print(p)
+
+ggsave('results/eval_flowsom_f1_impc.bonemarrow.png')    
+ggsave('results/eval_flowsom_f1_impc.bonemarrow.eps')    
