@@ -13,9 +13,6 @@ bonemarrowPath <- '/mnt/data/BM_Panel/'
 cd45Path <- paste0(bonemarrowPath, 'CleanFiles-CD45/')
 
 
-dir.create(p, showWarnings = FALSE)
-dir.create(paste0(p, 'eval'), showWarnings = FALSE)
-
 load(paste0(bonemarrowPath, 'store.allFCS-Updated.Rdata'))
 load(paste0(bonemarrowPath, 'all.gthres.Updated.Rdata'))
 
@@ -134,7 +131,11 @@ f1s <- parLapply(cl, filenames, function(fname)
         levels(lblCorrect) <- 1:length(popNamesCorrect)
         lblCorrect <- as.numeric(lblCorrect)
 
+        start.time <- Sys.time()
         lblFlowSOM <- as.numeric(res.flowSOM[[2]][res.flowSOM[[1]]$map$mapping[,1]])
+        end.time <- Sys.time()
+        time.taken <- end.time - start.time
+        print(paste0('FlowSOM time taken: ', time.taken))
 
         z <- helper_match_evaluate_multiple(lblFlowSOM, lblCorrect)
 

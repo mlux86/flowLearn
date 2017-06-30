@@ -138,9 +138,12 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
     colnames(dfEvalPp) <- populations  
 
     nanidx <- which(sapply(dfEval, function(x) { sum(is.nan(x)) == nrow(dfEval) }))
-    dfEval <- dfEval[, -nanidx]
-    dfEvalTp <- dfEvalTp[, -nanidx]
-    dfEvalPp <- dfEvalPp[, -nanidx]
+    if(length(nanidx) > 0)
+    {
+        dfEval <- dfEval[, -nanidx]
+        dfEvalTp <- dfEvalTp[, -nanidx]
+        dfEvalPp <- dfEvalPp[, -nanidx]
+    }
 
     save(dfEval, dfEvalTp, dfEvalPp, numProtoPerChannel, file = sprintf('results/eval_%s_%02d.RData', datasetName, numProtoPerChannel))
 
@@ -149,7 +152,6 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
         geom_boxplot(width = 0.3, outlier.shape = 20, outlier.size = 0.1) +
         scale_y_continuous(limits=c(0,1), breaks=seq(0,1,by=0.05)) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-        # labs(title = paste0('Sample f1 scores using ', numProtoPerChannel, ' prototype(s) per channel (n = ', nSamples, ")")) +
         xlab('Population') +
         ylab('F1-score')
 
@@ -169,9 +171,8 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
         geom_boxplot(width = 0.5, outlier.shape = 20, outlier.size = 0.1, notch = T) +
         scale_y_continuous(limits=c(0,1), breaks=seq(0,1,by=0.05)) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-        # labs(title = paste0('Sample proportions using ', numProtoPerChannel, ' prototype(s) per channel (n = ', nSamples, ")")) +
         xlab('Population') +
-        ylab('F1-score')
+        ylab('Proportion')
 
     print(p2)
 
@@ -179,6 +180,12 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
     ggsave(sprintf('results/eval_proportion_%s_%02d.eps', datasetName, numProtoPerChannel))        
 }
 
+flIdentifyOutliersF1 <- function(f1s)
+{
+    quantiles <- quantile(f1s, na.rm = T)
+    minn <- quantiles[[2]] - IQR(f1s, na.rm = T) * 1.5
+    which(f1s < minn)
+}
 
 flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = F)
 {
