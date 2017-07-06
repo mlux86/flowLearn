@@ -96,7 +96,10 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
 
         population <- populations[i]
 
+
         tryCatch({
+
+            # start.time <- Sys.time()
 
             # predict
             dd1 <- flFind(densdat, sprintf('population == "%s" & channelIdx == 1', population))
@@ -106,6 +109,11 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
             ddp1 <- flPredictThresholds(dd1, protoIdx1)
             ddp2 <- flPredictThresholds(dd2, protoIdx2)
 
+            # end.time <- Sys.time()
+            # time.taken <- end.time - start.time
+            # print(paste0("FlowLearn time taken for one population: ", time.taken))
+
+            # evaluate
             protoIdx <- union(protoIdx1, protoIdx2)
             testIdx <- setdiff(1:nSamples, protoIdx)
             ddp1test <- flAt(ddp1, testIdx)
@@ -122,6 +130,7 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
             print(paste0("Error in population ", population))
             print(e)
         })
+
     }
 
     for(ip in 1:length(populations))

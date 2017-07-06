@@ -41,6 +41,7 @@ filenames <- dir(cd45Path)
 cl <- parallel::makeCluster(parallel::detectCores(), type = "FORK", outfile = "")
 f1s <- parLapply(cl, filenames, function(fname) 
 # f1s <- parLapply(cl, filenames[sample(length(filenames), 100)], function(fname) 
+# f1s <- lapply(filenames, function(fname)
 {
 	barcode <- sub('.*(L[0-9]+).*', '\\1', fname)
 	
@@ -57,7 +58,11 @@ f1s <- parLapply(cl, filenames, function(fname)
         nCd45 <- nrow(cd45@exprs)
 
         # apply flowSOM on cd45 flow frame
+        # start.time <- Sys.time()
         res.flowSOM <- FlowSOM(cd45, colsToUse = 7:19, nClus = 11)
+        # end.time <- Sys.time()
+        # time.taken <- end.time - start.time
+        # print(paste0("FlowSOM time taken for one sample:", time.taken))
 
 		frames <- list()
 		frames$cd45 <- cd45	
@@ -131,11 +136,7 @@ f1s <- parLapply(cl, filenames, function(fname)
         levels(lblCorrect) <- 1:length(popNamesCorrect)
         lblCorrect <- as.numeric(lblCorrect)
 
-        start.time <- Sys.time()
         lblFlowSOM <- as.numeric(res.flowSOM[[2]][res.flowSOM[[1]]$map$mapping[,1]])
-        end.time <- Sys.time()
-        time.taken <- end.time - start.time
-        print(paste0('FlowSOM time taken: ', time.taken))
 
         z <- helper_match_evaluate_multiple(lblFlowSOM, lblCorrect)
 
@@ -155,26 +156,26 @@ f1s <- parLapply(cl, filenames, function(fname)
 
 })
 
-l <- laply(f1s, length)
-f1s <- as.data.frame(do.call('rbind', f1s[l == 11]))
+# l <- laply(f1s, length)
+# f1s <- as.data.frame(do.call('rbind', f1s[l == 11]))
 
-colnames(f1s) <- c("ungated", "CD3 T-cell", "Granulocyte Pre", "HFA", "HFB", "HFC", "HFD", "HFE", "HFF", "Myeloid", "Plasma")
+# colnames(f1s) <- c("ungated", "CD3 T-cell", "Granulocyte Pre", "HFA", "HFB", "HFC", "HFD", "HFE", "HFF", "Myeloid", "Plasma")
 
-print(paste0("Samples with wrong number of clusters: ", sum(l != 11)))
+# print(paste0("Samples with wrong number of clusters: ", sum(l != 11)))
 
-save(f1s, file = 'eval_flowsom_f1.RData')
+# save(f1s, file = 'eval_flowsom_f1.RData')
 
-f1s <- f1s[-1]
+# f1s <- f1s[-1]
 
-p <- ggplot(stack(f1s), aes(x = ind, y = values)) +
-    stat_boxplot(geom = 'errorbar', width = 0.25) +
-    geom_boxplot(width = 0.3, outlier.shape = 20, outlier.size = 0.1) +
-    scale_y_continuous(limits=c(0,1), breaks=seq(0,1,by=0.05)) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    xlab('Population') +
-    ylab('F1-score')
+# p <- ggplot(stack(f1s), aes(x = ind, y = values)) +
+#     stat_boxplot(geom = 'errorbar', width = 0.25) +
+#     geom_boxplot(width = 0.3, outlier.shape = 20, outlier.size = 0.1) +
+#     scale_y_continuous(limits=c(0,1), breaks=seq(0,1,by=0.05)) +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#     xlab('Population') +
+#     ylab('F1-score')
 
-print(p)
+# print(p)
 
-ggsave('results/eval_flowsom_f1_impc.bonemarrow.png')    
-ggsave('results/eval_flowsom_f1_impc.bonemarrow.eps')    
+# ggsave('results/eval_flowsom_f1_impc.bonemarrow.png')    
+# ggsave('results/eval_flowsom_f1_impc.bonemarrow.eps')    
