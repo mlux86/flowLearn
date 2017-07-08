@@ -203,7 +203,7 @@ flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = 
     dd <- flFind(densdat, sprintf('population == "%s" & channelIdx == %d', pop, chan))
     protoIdx <- flSelectPrototypes(dd, numProto)
     ddp <- flPredictThresholds(dd, protoIdx)    
-    D <- as.matrix(dist(flGetDensity(dd)$y))
+    D <- as.matrix(dist(flGetDensity(dd)$y, method = "manhattan"))
 
     if(!oneplot)
     {
@@ -227,7 +227,7 @@ flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = 
             flPlotDensThresh(flGetDensity(flAt(dd, i)), flGetGate(flAt(dd, i)), flGetGate(flAt(ddp, i)))
             dev.off()
         }
-        j <- order(D[protoIdx, i])[chan]
+        j <- order(D[protoIdx, i])[1]
         d <- flDtwMain(flGetDensity(flAt(dd, i)), flGetDensity(flAt(dd, protoIdx[j])))
         if(!oneplot)
         {
