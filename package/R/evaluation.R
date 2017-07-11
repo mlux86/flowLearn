@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' f <- unique(flSampleDensdat@data$fcs)[[1]]
-#' flGetGateAssignments(flSampleDensdat, flSampleBcellEvaluationData[[f]]$parentExprs, f, 'bcell')
+#' flGetGateAssignments(flSampleDensdat, flSamplePopulation7EvaluationData[[f]]$parentExprs, f, 'population_7')
 #' 
 #'
 flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = F)
@@ -67,7 +67,7 @@ flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = F)
 #' # In this example, we evaluate true against the true gate assignments, hence it should give perfect performance, i.e. F_1 = 1
 #'
 #' f <- unique(flSampleDensdat@data$fcs)[[1]]
-#' flEvalF1ScoreFCS(flSampleDensdat, f, 'bcell', flSampleBcellEvaluationData[[f]]$gateAssignments, flSampleBcellEvaluationData[[f]]$parentExprs, F)
+#' flEvalF1ScoreFCS(flSampleDensdat, f, 'population_7', flSamplePopulation7EvaluationData[[f]]$gateAssignments, flSamplePopulation7EvaluationData[[f]]$parentExprs, F)
 #' 
 #'
 flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentExprs, negate = F)
