@@ -6,56 +6,6 @@ library(flowLearn)
 
 printf <- function(...) invisible(cat(sprintf(...)))
 
-flEvalGate <- function(densdat, exprs, fcs, population, negate = F)
-{
-    predictedGateAssignments <- matrix(T, nrow(exprs), 1)
-
-    nChan <- ncol(exprs)
-
-    for (i in 1:nChan)
-    {
-    	tmp <- flFind(densdat, sprintf('fcs == "%s" & population == "%s" & channelIdx == "%d"', fcs, population, i))
-
-    	g.l <- flGetGate(tmp)[1]
-    	g.h <- flGetGate(tmp)[2]
-
-	    if (!is.na(g.l))
-	    {
-	        predictedGateAssignments <- predictedGateAssignments & (exprs[,i] > g.l)
-	    }
-	    if (!is.na(g.h))
-	    {
-	        predictedGateAssignments <- predictedGateAssignments & (exprs[,i] < g.h)
-	    }	    
-    }
-
-    if (negate)
-    {
-        predictedGateAssignments <- !predictedGateAssignments
-    }
-
-    predictedGateAssignments
-}
-
-flEvalF1ScoreFCS <- function(densdat, fcs, population)
-{
-    if(!exists('flowLearnEvaluationFolder'))
-    {
-        stop('Global variable "flowLearnEvaluationFolder" needed for evaluation!')
-    }
-
-    evalDat <- readRDS(paste0(flowLearnEvaluationFolder, 'eval/', fcs, '.', population, '.eval.rds'))
-    gateAssignments <- evalDat$indices
-
-    predictedGateAssignments <- flEvalGate(densdat, evalDat$parentFrame, fcs, population, evalDat$negate)
-
-    precision <- sum(gateAssignments & predictedGateAssignments) / sum(predictedGateAssignments)
-    recall <- sum(gateAssignments & predictedGateAssignments) / sum(gateAssignments)
-    f1 <- 2 * precision * recall / (precision + recall)
-
-    data.frame(precision = precision, recall = recall, f1 = f1, trueProportion = sum(gateAssignments) / length(gateAssignments), predictedProportion = sum(predictedGateAssignments) / length(predictedGateAssignments))
-}
-
 flEvalF1ScorePopulation <- function(densdat, population)
 {
 	fcsFiles <- as.character(unique(densdat@data$fcs))
@@ -187,13 +137,6 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
 
     ggsave(sprintf('results/eval_proportion_%s_%02d.png', datasetName, numProtoPerChannel))        
     ggsave(sprintf('results/eval_proportion_%s_%02d.eps', datasetName, numProtoPerChannel))        
-}
-
-flIdentifyOutliersF1 <- function(f1s)
-{
-    quantiles <- quantile(f1s, na.rm = T)
-    minn <- quantiles[[2]] - IQR(f1s, na.rm = T) * 1.5
-    which(f1s < minn)
 }
 
 flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = F)

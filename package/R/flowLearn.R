@@ -491,3 +491,4 @@ flPlotDensThresh <- function(dens, thresh = NULL, predicted = NULL, xlab = "Chan
         abline(v = predicted, col = 'blue', lwd = 2, lty = 2)
     }
 }
+
