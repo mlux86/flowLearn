@@ -1,13 +1,42 @@
-library(dtw)
-library(stringr)
-library(parallel)
-library(cluster)
-
 setClass("GatingInfo", representation(population = "character", parent = "character", channels = "numeric")) # defined for each panel
 
+#' An S4 class to represent density data used by flowLearn.
+#'
+#' @slot data A data frame where each row represents a density of a particular channel, together with additional information.
+#'
+#'       Columns of the data frame are: 
+#'
+#'       - fcs: FCS file of the density.
+#'
+#'       - population: Analyzed population of the density.
+#'
+#'       - channelIdx: Identifier of the channel for which the density was calculated.
+#'       
+#'       - <numFeatures> x-values of the density
+#'       
+#'       - <numFeatures> y-values of the density
+#'       
+#'       - gate.low: Lower threshold for this channel (defaults to NaN)
+#'       
+#'       - gate.high: Upper threshold for this channel (defaults to NaN)
+#'       
+#' @slot numFeatures Number of used features.
+#'       
+#' @examples
+#' str(flSampleDensdat) # summarizes the sample DensityData object provided by flowLearn
+#'       
 #' @export
 DensityData <- setClass("DensityData", slots = c(data = "data.frame", numFeatures = 'numeric'), prototype = list(data = data.frame(), numFeatures = 512))
 
+#' Initializes a DensityData object with default values
+#'
+#' @param An uninitialized DensityData object.
+#'
+#' @return The initialized DensityData Object.
+#'
+#' @examples
+#' str(flInit(DensityData())) # summarizes an empty DensityData object that has just been initialized
+#'       
 setGeneric(name = "flInit", def = function(obj) { standardGeneric("flInit") })
 
 setMethod(f = "flInit", signature = "DensityData",
@@ -22,6 +51,23 @@ setMethod(f = "flInit", signature = "DensityData",
                       }
                       )
 
+#' Adds one row (i.e. one density) to an existing DensityData object.
+#'
+#' @param obj The existing DensityData object.
+#' @param fcs The fcs file name of the new density.
+#' @param population The population of the new density.
+#' @param channelIdx The channel index of the new density.
+#' @param parentDensX The parent population's density x-values of the gated population.
+#' @param parentDensY The parent population's density y-values of the gated population.
+#' @param gate.low The lower threshold of the gated channel (optional, default: NaN).
+#' @param gate.high The upper threshold of the gated channel (optional, default: NaN).
+#'
+#' @return The supplied DensityData obj, including a new row with the supplied parameters.
+#'
+#' @examples
+#' densdat <- flInit(DensityData()) # create empty DensityData object
+#' densdat <- flAdd(densdat, 'mine.fcs', 'CD43+', 1, 1:512, runif(n = 512, min = 1, max = 10), 2, 7) # add one channel density 
+#'       
 setGeneric(name = "flAdd", def = function(obj, fcs, population, channelIdx, parentDensX, parentDensY, gate.low = NaN, gate.high = NaN) { standardGeneric("flAdd") })
 
 setMethod(f = "flAdd", signature = "DensityData",
@@ -36,6 +82,16 @@ setMethod(f = "flAdd", signature = "DensityData",
                      }
                      )
 
+#' Returns a list(x,y) with density x and y values for the given DensityData object. Usually this is called on DensityData objects with only one row, to extract a density for one specific channel.
+#'
+#' @param obj The DensityData object.
+#' 
+#' @return A list(x = matrix, y = matrix) with matrices x and y that represent x and y parts of densities for each row in obj.
+#'
+#' @examples
+#' dens <- flGetDensity(  flAt(flSampleDensdat, 42)  ) # grab density at row index 42 
+#' flPlotDensThresh(dens)
+#'       
 setGeneric(name = "flGetDensity", def = function(obj) { standardGeneric("flGetDensity") })
 
 setMethod(f = "flGetDensity", signature = "DensityData",
@@ -47,6 +103,18 @@ setMethod(f = "flGetDensity", signature = "DensityData",
                           }
                           )
 
+#' Returns a matrix with two columns which represent lower and upper thresholds of the given DensityData object.
+#'
+#' @param obj The DensityData object.
+#' 
+#' @return A matrix with columns "gate.low" and "gate.high", representing lower and upper thresholds on all rows/channels present obj.
+#'
+#' @examples
+#' dd <- flAt(flSampleDensdat, 42) # grab density at row index 42 
+#' dens <- flGetDensity(dd) # 
+#' gt <- flGetGate(dd) # returns vector with "gate.low" and "gate.high"
+#' flPlotDensThresh(dens, gt)
+#'       
 setGeneric(name = "flGetGate", def = function(obj) { standardGeneric("flGetGate") })
 
 setMethod(f = "flGetGate", signature = "DensityData",
@@ -56,6 +124,17 @@ setMethod(f = "flGetGate", signature = "DensityData",
                           }
                           )
 
+#' Returns a new DensityData object with a subset of entries of the supplied obj.
+#'
+#' @param obj The DensityData object to be filtered.
+#' @param mysubset A logical expression, combining columns of the DensityData object.
+#' 
+#' @return A new DensityData object with a subset of entries, defined by mysubset.
+#'
+#' @examples
+#' # Get all densities for Population "population_11" and the first channel
+#' dd <- flFind(flSampleDensdat, 'population == "population_11" & channelIdx == 1')
+#'       
 setGeneric(name = "flFind", def = function(obj, mysubset) { standardGeneric("flFind") })
 
 setMethod(f = "flFind", signature = "DensityData",
@@ -67,6 +146,16 @@ setMethod(f = "flFind", signature = "DensityData",
                           }
                           )
 
+#' Returns a single density from the data slot at the specified row index.
+#'
+#' @param obj The DensityData object to be filtered.
+#' @param idx The row index of the internal "data" data frame.
+#' 
+#' @return A new DensityData object with only one row, given by the specified index.
+#'
+#' @examples
+#' dd <- flAt(flSampleDensdat, 42) # grab 42nd entry of flSampleDensdat
+#'       
 setGeneric(name = "flAt", def = function(obj, idx) { standardGeneric("flAt") })
 
 setMethod(f = "flAt", signature = "DensityData",
@@ -78,6 +167,15 @@ setMethod(f = "flAt", signature = "DensityData",
                           }
                           )
 
+#' Returns the size of a given DensityData object.
+#'
+#' @param obj The DensityData object.
+#' 
+#' @return The size of obj, i.e. the number of rows of the internal "data" data frame.
+#'
+#' @examples
+#' print(flSize(flSampleDensdat)) # print size of flSampleDensdat
+#'       
 setGeneric(name = "flSize", def = function(obj) { standardGeneric("flSize") })
 
 setMethod(f = "flSize", signature = "DensityData",
@@ -87,6 +185,18 @@ setMethod(f = "flSize", signature = "DensityData",
                           }
                           )
 
+#' Concatenates two DensityData objects.
+#'
+#' @param obj1 The first DensityData object.
+#' @param obj2 The second DensityData object.
+#' 
+#' @return A new DensityData object consisting of the internal "data" data frames of obj1 and obj2.
+#'
+#' @examples
+#' print(flSize(flSampleDensdat))  
+#' dd <- flConcat(flSampleDensdat, flSampleDensdat)
+#' print(flSize(dd))
+#'       
 setGeneric(name = "flConcat", def = function(obj1, obj2) { standardGeneric("flConcat") })
 
 setMethod(f = "flConcat", signature = "DensityData",
@@ -96,7 +206,21 @@ setMethod(f = "flConcat", signature = "DensityData",
                           }
                           )
 
+#' Normalizes population names, such that they can be used, for example in file names.
+#'
+#' In particular, '+' is replaced by 'p' (positive), '-' is replaced by 'n' (negative), and all special characters are removed.
+#'
+#' @param population The (unnormalized) name of a population.
+#' 
+#' @return The normalized population name.
+#'
 #' @export
+#'
+#' @examples
+#' popName <- 'IGD+ CD27-'
+#' popNameNormalized <- flNormalizePopulationName(popName)      
+#' print(popNameNormalized)
+#'
 flNormalizePopulationName <- function(population)
 {
     populationNormalized <- stringr::str_replace_all(population, '\\+', 'p')
@@ -105,16 +229,50 @@ flNormalizePopulationName <- function(population)
     populationNormalized
 }
 
+#' Estimates a density on a given data vector.
+#'
+#' This method calculates densities used by flowLearn. It uses the default stats::density function and smoothens the result using stats::spline.smooth.
+#'
+#' @param data The data vector for which the density is calculated.
+#' @param n The number of density features.
+#' 
+#' @return The calculated density object.
+#'
 #' @export
+#'
+#' @examples
+#' x <- seq(-pi, pi, by = 0.01)
+#' y <- sin(x)
+#' noise <- runif(n = length(y), min = 0, max = 1)
+#' noisy_y <- y + noise
+#' par(mfrow = c(2,1))
+#' plot(noisy_y)
+#' plot(flEstimateDensity(noisy_y, 512))
+#'
 flEstimateDensity <- function(data, n)
 {
-  dens <- density(data[which(!is.na(data))], n = n, from = 0)
-  dens <- smooth.spline(dens$x, dens$y, spar=0.4)
+  dens <- stats::density(data[which(!is.na(data))], n = n, from = 0)
+  dens <- stats::smooth.spline(dens$x, dens$y, spar=0.4)
   dens$y[which(dens$y<0)] <- 0
   return(dens)
 }
 
+#' Given two R density objects, calculates a distance matrix based on the derivative DTW distance.
+#'
+#' Given two R density objects, this method uses the Derivative Dynamic Time Warping distance to calculate a distance matrix which can be used for alignment with DTW.
+#'
+#' @param densA The first density object, such as from R's density function.
+#' @param densB The second density object, such as from R's density function.
+#' 
+#' @return The Derivative Dynamic Time Warping distance matrix between densA and densB.
+#'
 #' @export
+#'
+#' @examples
+#' densA <- flGetDensity(flAt(flSampleDensdat, 42))
+#' densB <- flGetDensity(flAt(flSampleDensdat, 43))
+#' str(flDerivativeDtwDistanceMatrix(densA, densB))
+#'
 flDerivativeDtwDistanceMatrix <- function(densA, densB)
 {
 	lenA <- length(densA$y)
@@ -131,18 +289,25 @@ flDerivativeDtwDistanceMatrix <- function(densA, densB)
     difB <- sapply(2:(lenB-1), function(i) (densB$y[i] - densB$y[i-1]) + ((densB$y[i+1] - densB$y[i-1]) / 2) / 2)
     difB <- c(difB[1], difB, difB[lenB-2])
     
-    # h <- 1
-
-    # difA <- sapply((h+1):(lenA-h), function(i) (densA$y[i+h] - densA$y[i-h]) / (2 * h))
-    # difA <- c(difA[1], difA, difA[lenA-2])
-
-    # difB <- sapply((h+1):(lenB-h), function(i) (densB$y[i+h] - densB$y[i-h]) / (2 * h))
-    # difB <- c(difB[1], difB, difB[lenB-2])
-
     proxy::dist(difA, difB)
 }
 
+#' Wrapper function to carry out DDTW for flowLearn. 
+#'
+#' Wrapper function to carry out Derivative Dynamic Time Warping for flowLearn. It uses Derivative DTW with a DTW specific step pattern, which is "typeIds" from the dtw package.
+#'
+#' @param densA The first density object, such as from R's density function.
+#' @param densB The second density object, such as from R's density function.
+#' 
+#' @return The Derivative Dynamic Time Warping object from the dtw package.
+#'
 #' @export
+#'
+#' @examples
+#' dd <- flFind(flSampleDensdat, 'population == "population_3" & channelIdx == 1')
+#' dtwObj <- flDtwMain(flGetDensity(flAt(dd, 1)), flGetDensity(flAt(dd, 2)))
+#' plot(dtwObj)
+#'
 flDtwMain <- function(densA, densB, ...)
 {
     ddtw <- dtw::dtw(flDerivativeDtwDistanceMatrix(densA, densB), step.pattern = dtw::typeIds, ...)
@@ -153,17 +318,53 @@ flDtwMain <- function(densA, densB, ...)
     ddtw
 }
 
+#' Given a DensityData object, selects a number of prototype densities from it.
+#'
+#' Using PAM clustering on L1 density distances, this method returns a list of prototype indices which are rows in the given DensityData object.
+#'
+#' @param densdat The DensityData object. It should contain densities from the same channel only.
+#' @param k The number of prototypes.
+#' 
+#' @return Vector of indices in the densdat data that were determined to be prototypes.
+#'
 #' @export
+#'
+#' @examples
+#' dd <- flFind(flSampleDensdat, 'population == "population_6" & channelIdx == 2')
+#' protoIdx <- flSelectPrototypes(dd, 1)
+#' print(protoIdx)
+#'
 flSelectPrototypes <- function(densdat, k)
 {	
-    D <- dist(flGetDensity(densdat)$y, method = 'manhattan')
+    D <- proxy::dist(flGetDensity(densdat)$y, method = 'manhattan')
   
     protoIdx <- cluster::pam(D, k = k)$medoids
   
     return(protoIdx)
 }
 
+#' Aligns two densities A and B with each other and transfers a given reference threshold in B to A.
+#'
+#' Uses Derivative Dynamic Time Warping to align a given density A with a reference density B and transfers a reference threshold fromB to A.
+#'
+#' @param dens A R density object with unknown threshold.
+#' @param refDens A reference R density object with known threshold.
+#' @param refThreshold The threshold belonging to refDens.
+#' 
+#' @return A double value representing the threshold that resulted from aligning both densities and transferring the reference threshold. If refThreshold is NA, this method returns NA as well.
+#'
 #' @export
+#'
+#' @examples
+#' dd <- flFind(flSampleDensdat, 'population == "population_5" & channelIdx == 1')
+#' dens <- flGetDensity(flAt(dd, 1))
+#' trueThresh <- flGetGate(flAt(dd, 1))[1]
+#' refDens <- flGetDensity(flAt(dd, 2))
+#' refThresh <- flGetGate(flAt(dd, 2))[1]
+#'
+#' predictedThreshold <- flAlignThreshold(dens, refDens, refThresh)
+#' flPlotDensThresh(dens, refThresh, trueThresh)
+#'
 flAlignThreshold <- function(dens, refDens, refThreshold)
 {
     if (is.na(refThreshold))
@@ -192,7 +393,28 @@ flAlignThreshold <- function(dens, refDens, refThreshold)
     thresh
 }
 
+#' Predicts thresholds for all densities in a DensityData object, using a set of prototypes.
+#'
+#' This method uses the prototypes specified in protoIdx to predict thresholds of all other (non-prototype indices) in densdat. 
+#' For each density, it determines the nearest prototype density and calls flAlignThreshold to transfer lower and upper thresholds.
+#' Densities in densdat that are prototypes (specified by protoIdx) must have thresholds set.
+#' Existing non-prototype thresholds in densdat are replaced by predicted thresholds.
+#'
+#' @param densdat A DensityData object containing prototypes and non-prototypes. Prototypes must have thresholds set. All densities in densdat have to be from the same channel.
+#' @param protoIdx A set of indices that specify prototype rows in densdat.
+#' 
+#' @return A copy of densdat where non-prototype densities have predicted thresholds set.
+#'
 #' @export
+#'
+#' @examples
+#' dd <- flFind(flSampleDensdat, 'population == "population_6" & channelIdx == 2')
+#' protoIdx <- flSelectPrototypes(dd, 1)
+#' ddp <- flPredictThresholds(dd, protoIdx)
+#'
+#' par(mfrow = c(3,1))
+#' for(i in 1:3) flPlotDensThresh(flGetDensity(flAt(ddp, i)), flGetGate(flAt(dd, i)), flGetGate(flAt(ddp, i)))
+#'
 flPredictThresholds <- function(densdat, protoIdx)
 {
 	n <- flSize(densdat)
@@ -228,14 +450,34 @@ flPredictThresholds <- function(densdat, protoIdx)
 
 }
 
+#' Plots a given density and true/predicted thresholds, if supplied.
+#' 
+#' Plots a given density and true/predicted thresholds, if supplied. True thresholds are drawn as red lines. Predicted thresholds are drawn as blue lines.
+#' If no thresholds are specified, they are not drawn.
+#'
+#' @param dens A R density object such as returned from the stats::density function.
+#' @param thresh The true threshold in the given density. (optional)
+#' @param predicted The predicted threshold in the given density.
+#' @param xlab The label of the x-axis (defaults to "Channel")
+#' @param ylab The label of the y-axis (defaults to "Density")
+#' 
 #' @export
-flPlotDensThresh <- function(dens, thresh = NULL, predicted = NULL)
+#'
+#' @examples
+#' dd <- flFind(flSampleDensdat, 'population == "population_8" & channelIdx == 1')
+#' protoIdx <- flSelectPrototypes(dd, 1)
+#' ddp <- flPredictThresholds(dd, protoIdx)
+#'
+#' par(mfrow = c(3,1))
+#' for(i in 1:3) flPlotDensThresh(flGetDensity(flAt(ddp, i)), flGetGate(flAt(dd, i)), flGetGate(flAt(ddp, i)))
+#'
+flPlotDensThresh <- function(dens, thresh = NULL, predicted = NULL, xlab = "Channel", ylab = "Density")
 {
-    p <- plot(
+    plot(
          dens$x,
          dens$y,
-         xlab = 'Channel',
-         ylab = 'Density',
+         xlab = xlab,
+         ylab = ylab,
          type = 'o'
         );
 
@@ -248,6 +490,4 @@ flPlotDensThresh <- function(dens, thresh = NULL, predicted = NULL)
     {
         abline(v = predicted, col = 'blue', lwd = 2, lty = 2)
     }
-
-    return(p)
 }
