@@ -1,0 +1,80 @@
+---
+title: "An introduction to flowLearn"
+author: "Markus Lux"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Identification of cell populations in flow cytometry is a critical part of analysis and lays the
+groundwork for both clinical diagnostics and research discovery. The current paradigm of manual
+analysis is time consuming and subjective. If the goal is to match manual analysis, supervised
+tools provide the best performance, however they require fine parameterization to obtain the best
+results, Hence, there is a strong need for methods that are fast to setup, accurate and
+interpretable at the same time. FlowLearn is a semi-supervised approach for the quality-checked
+identification of cell populations. Using as few as one manually gated sample, through density
+alignments it is able to predict gates on other samples with high accuracy and speed. Our tool
+achieves $F_1$-measures exceeding $F_1 > 0.99$ for many populations and $F_1 > 0.90$ for the
+overwhelming majority. Furthermore, users can directly interpret and adjust automated gates on new
+sample files to iteratively improve the initial training.
+
+This vignette is intended to give a few working code examples on how to use flowLearn. For more
+information on the method, please have a look at the corresponding paper.
+
+## Using flowLearn to predict gates on populations
+
+**Loading flowLearn:**
+
+```{r}
+library(flowLearn)
+```
+
+**There is example density data object stored as `flSampleDensdat` (with anonymized sample and population names). Exemplary, print its samples and populations:**
+
+```{r}
+	print(unique(flSampleDensdat@data$fcs))
+	print(unique(flSampleDensdat@data$population))
+```
+
+**Plot the density of one sample for `population_6` using the second channel:**
+
+```{r, fig.width=7, fig.height=5}
+dd <- flFind(flSampleDensdat, 'population == "population_6" & channelIdx == 2')
+flPlotDensThresh(flGetDensity(flAt(dd, 1)), flGetGate(flAt(dd, 1)))
+```
+
+**Let flowLearn select one prototype to gate the `population_7` of the second sample:**
+
+```{r, fig.width=7, fig.height=5}
+# extract relevant data
+dd <- flFind(flSampleDensdat, 'population == "population_7" & channelIdx == 1')
+
+# select prototypes
+protoIdx <- flSelectPrototypes(dd, 1)
+print(paste0('Selected prototype index: ', protoIdx))
+
+# predict thresholds
+ddp <- flPredictThresholds(dd, protoIdx)
+                       
+# plot predictions                                                                
+flPlotDensThresh(flGetDensity(flAt(ddp, 3)), flGetGate(flAt(dd, 3)), flGetGate(flAt(ddp, 3)))
+```
+
+## Evaluate prediction of all FCS files in terms of F1-score
+
+```{r, fig.width=7, fig.height=5}
+fcs <- unique(flSampleDensdat@data$fcs)
+
+f1Scores <- sapply(fcs, function(f) {
+
+	flEvalF1ScoreFCS(ddp, f, 'population_7', flSamplePopulation7EvaluationData[[f]]$gateAssignments, flSamplePopulation7EvaluationData[[f]]$parentExprs, F)
+	
+})
+
+print(f1Scores)
+```
+
+It is visible that the previously selected prototype has perfect F1 = 1, because it predicted itself. All other samples show very good performance.
