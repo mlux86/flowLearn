@@ -29,3 +29,10 @@ iteratively improve the initial training.
 - Clone the repository and build the `R` package using `devtools::install('package', build_vignettes = T)`
 
 - Load the package using `library(flowLearn)` and view the quick-start vignette using `vignette('flowLearnVignette')`.
+
+## Files in the repository
+
+- `package/`: The `R` package of flowLearn
+- `eval.R` and `eval.sh`: Scripts used for evaluating flowLearn on different data sets
+- `compare_flowSOM_bonemarrow` and `helper_match_evaluate_multiple`: Scripts for running and evaluating flowSOM on the mice data set.
+- `prepare_*` scripts: Converting raw FCS files into flowLearn's custom `DensityData` format 
