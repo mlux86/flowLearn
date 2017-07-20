@@ -36,3 +36,7 @@ iteratively improve the initial training.
 - `eval.R` and `eval.sh`: Scripts used for evaluating flowLearn on different data sets
 - `compare_flowSOM_bonemarrow` and `helper_match_evaluate_multiple`: Scripts for running and evaluating flowSOM on the mice data set.
 - `prepare_*` scripts: Converting raw FCS files into flowLearn's custom `DensityData` format 
+
+## Licensing
+
+It is permitted to use flowLearn for non-commercial, i.e. academic or other scholarly research use. Please have a look at the LICENSE file for details.
