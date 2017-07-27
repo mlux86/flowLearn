@@ -34,8 +34,8 @@ iteratively improve the initial training.
 
 - `package/`: The `R` package of flowLearn
 - `eval.R` and `eval.sh`: Scripts used for evaluating flowLearn on different data sets
-- `compare_flowSOM_bonemarrow` and `helper_match_evaluate_multiple`: Scripts for running and evaluating flowSOM on the mice data set.
 - `prepare_*` scripts: Converting raw FCS files into flowLearn's custom `DensityData` format 
+- `comparisons/` Scripts for running and evaluating flowSOM and DeepCyTOF on the mice data set.
 
 ## Licensing
 
