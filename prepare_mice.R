@@ -5,20 +5,20 @@ library(flowCore)
 
 printf <- function(...) invisible(print(sprintf(...)))
 
-bonemarrowPath <- '/mnt/data/BM_Panel/'
-cd45Path <- paste0(bonemarrowPath, 'CleanFiles-CD45/')
-p <- '/home/mlux/flowlearn.traindat.impc.bonemarrow/'
+micePath <- '/mnt/data/BM_Panel/'
+cd45Path <- paste0(micePath, 'CleanFiles-CD45/')
+p <- '/home/mlux/flowlearn.traindat.mice/'
 
 
 dir.create(p, showWarnings = FALSE)
 dir.create(paste0(p, 'eval'), showWarnings = FALSE)
 
-load(paste0(bonemarrowPath, 'store.allFCS-Updated.Rdata'))
-load(paste0(bonemarrowPath, 'all.gthres.Updated.Rdata'))
+load(paste0(micePath, 'store.allFCS-Updated.Rdata'))
+load(paste0(micePath, 'all.gthres.Updated.Rdata'))
 
 sampleMeta <- as.data.frame(store.allFCS, stringsAsFactors = F)
 threshTable <- as.data.frame(all.gthres.Updated, stringsAsFactors = F)
-gateMeta <- read.table('prepare_bonemarrow.tsv', sep = '\t', header = T, stringsAsFactors = F)
+gateMeta <- read.table('prepare_mice.tsv', sep = '\t', header = T, stringsAsFactors = F)
 
 rownames(sampleMeta) <- sampleMeta$"FCS files"
 rownames(threshTable) <- sampleMeta$"FCS files"
