@@ -1,6 +1,7 @@
 library(stringr)
 library(parallel)
 library(flowLearn)
+library(flowCore)
 
 printf <- function(...) invisible(print(sprintf(...)))
 
@@ -51,7 +52,8 @@ densdat.lst <- parLapply(cl, filenames, function(fname)
 		thresh <- unlist(threshTable[grep(barcode, rownames(threshTable)), ])
 		names(thresh) <- NULL
 
-		load(paste0(cd45Path, fname))
+		# load(paste0(cd45Path, fname))
+		cd4 <- read.FCS(cd45Path)
 
 		frames <- list()
 		frames$cd45 <- cd45	
