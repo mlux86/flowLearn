@@ -166,7 +166,7 @@ flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = 
         flPlotDensThresh(flGetDensity(flAt(dd, i)), flGetGate(flAt(dd, i)), flGetGate(flAt(ddp, i)))
         if(save)
         {
-            png('/tmp/prediction.png', width = 1000, height = 750, res = 120)
+            png('/tmp/prediction.png', width = 2000, height = 1500, res = 300)
             flPlotDensThresh(flGetDensity(flAt(dd, i)), flGetGate(flAt(dd, i)), flGetGate(flAt(ddp, i)))
             dev.off()
         }
@@ -179,8 +179,8 @@ flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = 
         plot(d, type = 'twoway', lwd = 2, offset = 0.001, match.indices = 100)
         if(save)
         {
-            png('/tmp/alignment.png', width = 1000, height = 750, res = 120)
-            plot(d, type = 'twoway', lwd = 2, offset = 0.3, match.indices = 100)
+            png('/tmp/alignment.png', width = 2000, height = 1500, res = 300)
+            plot(d, type = 'twoway', lwd = 2, offset = 0.001, match.indices = 100)
             dev.off()
         }
         readline()

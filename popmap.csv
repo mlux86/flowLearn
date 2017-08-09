@@ -2,7 +2,7 @@ normalized,original
 38ndrn,38-DR-
 38ndrp,38-DR+
 38pdrn,38+DR-
-bcell,B-cell
+bcell,B cells
 ccr4ncd45ron,CCR4-CD45RO-
 ccr4ncd45rop,CCR4-CD45RO+
 ccr4nhladrn,CCR4-HLADR-
@@ -23,10 +23,10 @@ cd16pcd56p,CD14+CD56+
 cd19,CD19
 cd20,CD20
 cd3,CD3
-cd3tcell,CD3 T-cell
+cd3tcell,T cells
 cd4,CD4
-cd43n,CD43-
-cd43p,CD43+
+cd43n,CD43- cells
+cd43p,CD43+ cells
 cd4activated,CD4 Activated
 cd4centralmemory,CD4 Central Memory
 cd4effector,CD4 Effector
@@ -40,13 +40,13 @@ cd8effectormemory,CD8 Effector Memory
 cd8naive,CD8 Naive
 dnt,DPT
 dpt,DNT
-granulocytepre,Granulocyte Pre
-hfa,HFA
-hfb,HFB
-hfc,HFC
-hfd,HFD
-hfe,HFE
-hff,HFF
+granulocytepre,Granulocytes
+hfa,HF A
+hfb,HF B
+hfc,HF C
+hfd,HF D
+hfe,HF E
+hff,HF F
 hladrp,HLADR+
 igdncd27n,IGD-CD27-
 linncd14n,Lin-CD14-
@@ -55,12 +55,12 @@ live,Live
 memoryigdn,Memory IGD-
 memoryigdp,Memory IGD+
 monocytes,Monocytes
-myeloid,Myeloid
+myeloid,Myeloid cells
 naive,Naive
-notcd3tcell,not(CD3 T-cells)
-notgranulocytepre,not(Granulocyte Pre)
-notplasma,not(Plasma)
-plasma,Plasma
+notcd3tcell,*not(T cells)
+notgranulocytepre,*not(Granulocytes)
+notplasma,*not(Plasma cells)
+plasma,Plasma cells
 plasmablasts,Plasmablasts
 transitional,Transitional
 
