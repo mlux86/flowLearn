@@ -132,8 +132,8 @@ setMethod(f = "flGetGate", signature = "DensityData",
 #' @return A new DensityData object with a subset of entries, defined by mysubset.
 #'
 #' @examples
-#' # Get all densities for Population "population_11" and the first channel
-#' dd <- flFind(flSampleDensdat, 'population == "population_11" & channelIdx == 1')
+#' # Get all densities for Population "hfa" and the first channel
+#' dd <- flFind(flSampleDensdat, 'population == "hfa" & channelIdx == 1')
 #'       
 setGeneric(name = "flFind", def = function(obj, mysubset) { standardGeneric("flFind") })
 
@@ -304,7 +304,7 @@ flDerivativeDtwDistanceMatrix <- function(densA, densB)
 #' @export
 #'
 #' @examples
-#' dd <- flFind(flSampleDensdat, 'population == "population_3" & channelIdx == 1')
+#' dd <- flFind(flSampleDensdat, 'population == "cd3tcell" & channelIdx == 1')
 #' dtwObj <- flDtwMain(flGetDensity(flAt(dd, 1)), flGetDensity(flAt(dd, 2)))
 #' plot(dtwObj)
 #'
@@ -330,7 +330,7 @@ flDtwMain <- function(densA, densB, ...)
 #' @export
 #'
 #' @examples
-#' dd <- flFind(flSampleDensdat, 'population == "population_6" & channelIdx == 2')
+#' dd <- flFind(flSampleDensdat, 'population == "notplasma" & channelIdx == 2')
 #' protoIdx <- flSelectPrototypes(dd, 1)
 #' print(protoIdx)
 #'
@@ -356,7 +356,7 @@ flSelectPrototypes <- function(densdat, k)
 #' @export
 #'
 #' @examples
-#' dd <- flFind(flSampleDensdat, 'population == "population_5" & channelIdx == 1')
+#' dd <- flFind(flSampleDensdat, 'population == "plasma" & channelIdx == 1')
 #' dens <- flGetDensity(flAt(dd, 1))
 #' trueThresh <- flGetGate(flAt(dd, 1))[1]
 #' refDens <- flGetDensity(flAt(dd, 2))
@@ -408,7 +408,7 @@ flAlignThreshold <- function(dens, refDens, refThreshold)
 #' @export
 #'
 #' @examples
-#' dd <- flFind(flSampleDensdat, 'population == "population_6" & channelIdx == 2')
+#' dd <- flFind(flSampleDensdat, 'population == "notplasma" & channelIdx == 2')
 #' protoIdx <- flSelectPrototypes(dd, 1)
 #' ddp <- flPredictThresholds(dd, protoIdx)
 #'
@@ -464,7 +464,7 @@ flPredictThresholds <- function(densdat, protoIdx)
 #' @export
 #'
 #' @examples
-#' dd <- flFind(flSampleDensdat, 'population == "population_8" & channelIdx == 1')
+#' dd <- flFind(flSampleDensdat, 'population == "myeloid" & channelIdx == 1')
 #' protoIdx <- flSelectPrototypes(dd, 1)
 #' ddp <- flPredictThresholds(dd, protoIdx)
 #'
