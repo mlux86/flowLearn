@@ -30,7 +30,7 @@ DensityData <- setClass("DensityData", slots = c(data = "data.frame", numFeature
 
 #' Initializes a DensityData object with default values
 #'
-#' @param An uninitialized DensityData object.
+#' @param obj An uninitialized DensityData object.
 #'
 #' @return The initialized DensityData Object.
 #'
@@ -306,6 +306,7 @@ flDerivativeDtwDistanceMatrix <- function(densA, densB)
 #'
 #' @param densA The first density object, such as from R's density function.
 #' @param densB The second density object, such as from R's density function.
+#' @param ... Optional parameters given to dtw::dtw
 #' 
 #' @return The Derivative Dynamic Time Warping object from the dtw package.
 #'

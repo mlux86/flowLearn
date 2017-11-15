@@ -1,0 +1,215 @@
+---
+title: "An introduction to flowLearn"
+author: "Markus Lux"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Identification of cell populations in flow cytometry is a critical part of analysis and lays the
+groundwork for both clinical diagnostics and research discovery. The current paradigm of manual
+analysis is time consuming and subjective. If the goal is to match manual analysis, supervised
+tools provide the best performance, however they require fine parameterization to obtain the best
+results, Hence, there is a strong need for methods that are fast to setup, accurate and
+interpretable at the same time. FlowLearn is a semi-supervised approach for the quality-checked
+identification of cell populations. Using as few as one manually gated sample, through density
+alignments it is able to predict gates on other samples with high accuracy and speed. Our tool
+achieves $F_1$-measures exceeding $F_1 > 0.99$ for many populations and $F_1 > 0.90$ for the
+overwhelming majority. Furthermore, users can directly interpret and adjust automated gates on new
+sample files to iteratively improve the initial training.
+
+This vignette is intended to give a few working code examples on how to use flowLearn. For more
+information on the method, please have a look at the corresponding paper. The flowLearn `R`
+documentation is a helpful resource, too.
+
+## Initializing flowLearn
+
+FlowLearn can be loaded by using 
+
+```{r}
+library(flowLearn)
+```
+
+It depends on four libraries which are all available in the standard `R` ecosystem: 
+
+* `dtw`
+* `parallel`
+* `stringr`
+* `cluster`
+
+All flowLearn methods have the prefix `fl` in order to avoid clashes with other packages.
+
+## Example data
+
+The `flowLearn` package provides example data that is used in this vignette. It contains
+pre-computed densities from three samples of the "Mice" data set from the original paper, and
+corresponding evaluation data.
+
+1. `flSampleDensdat` -- a `DensityData` object. This is flowLearn's main data structure, containing
+   density and gate information of all samples. In order to apply flowLearn, all data has to be
+   converted into this format. Learn more about it by running `?DensityData` or read the
+   corresponding section of this vignette.
+
+2. `flSampleBcellEvaluationData` -- Data needed for evaluating the B-cell population in this
+   vignette, in particular true gate assignments and parent expressions. This is necessary for
+   evaluation purposes only.
+
+3. `flSampleFlowFrame` -- A flowCore::flowFrame object that was read from an FCS file containing a
+   clean population of CD45 cells. To reduce its size, its expressions contain only the `GR1` and
+   `CD43` channels. These are needed for gating Granulocytes. The flowFrame is used to demonstrate
+   the construction of `DensityData` objects.
+
+To keep the file size small, we provide only very few samples and evaluate only one population. Keep
+in mind that one sample contains around 300k to 500k cells.
+
+Let's print the example samples and populations:
+
+```{r}
+samples <- unique(flSampleDensdat@data$fcs)
+populations <- unique(flSampleDensdat@data$population)
+print(samples)
+print(populations)
+```
+
+We can also plot the density of one sample for the `notplasma` population using the second channel:
+
+```{r, fig.width=7, fig.height=5}
+# Select the first sample as an example.
+sampleIdx <- 1
+fcsName <- samples[[sampleIdx]]
+
+# Use flFind() to filter the second channel density of the notplasma population with the given sample.
+dd <- flFind(flSampleDensdat, paste0('population == "notplasma" & channelIdx == 2 & fcs == "', fcsName, '"'))
+
+# Use flPlotDensThresh() to plot the selected density and threshold.
+flPlotDensThresh(flGetDensity(dd), flGetGate(dd))
+```
+
+## Selecting prototypes
+
+Having covered the basics of flowLearn, we can now let it gate one channel of the `bcell` population
+(the gate consists of only one channel). In order to do that, it is necessary to first select a
+prototype:
+
+```{r}
+# Extract all densities of the bcell population and the first channel.
+dd <- flFind(flSampleDensdat, 'population == "bcell" & channelIdx == 1')
+
+# Use flSelectPrototypes() to select one prototype.
+protoIdx <- flSelectPrototypes(dd, 1)
+
+print(paste0('Selected prototype index: ', protoIdx))
+```
+
+In our example, selecting the prototype is trivial. In the real-world, we would not have only three
+samples, but many more. Choosing the correct prototype(s) there is important.
+
+## Predicting thresholds
+
+Having the prototype identified, it is now the task of predicting thresholds on all non-prototype
+samples.
+
+```{r, fig.width=7, fig.height=5}
+# Use flPredictThresholds() to predict thresholds using a given prototype
+# All other samples are aligned with the prototype and its threshold is transferred.
+ddp <- flPredictThresholds(dd, protoIdx)
+                       
+# Plot predictions the prediction, exemplary for the third sample
+# Using flAt(), the density at index 3 is extracted for display.
+# flGetDensity() and flGetGate() extract its density and gate, respectively.
+flPlotDensThresh(flGetDensity(flAt(ddp, 3)), flGetGate(flAt(dd, 3)), flGetGate(flAt(ddp, 3)))
+```
+
+It is visible that the predicted threshold (blue) matches up well with the true threshold (red).
+
+Let's look at the corresponding alignment:
+
+```{r, fig.width=7, fig.height=5}
+# Re-do the alignment for the purpose of visualization.
+# The third density is aligned to the prototype density.
+# Here 
+d <- flDtwMain(flGetDensity(flAt(dd, 3)), flGetDensity(flAt(dd, protoIdx)))
+
+# Use the dtw package's plotting routine.
+plot(d, type = 'twoway', lwd = 2, offset = 0.001, match.indices = 200)
+```
+
+Here, the red-dashed density denotes the prototype and the solid black one is the predicted density.
+
+## Evaluating predictions of all FCS files
+
+Until now we have shown that the alignment works qualitatively. Let's now quantitatively evaluate
+the $F_1$-scores. For that, we compare the predicted to the true gate assignments provided in
+`flSampleBcellEvaluationData`. We re-use the predicted densities stored in `ddp`:
+
+```{r, fig.width=7, fig.height=5}
+# Calculate the F1 score for each sample
+f1Scores <- sapply(samples, function(fcs) 
+{
+
+	# The function flEvalF1ScoreFCS() takes the predicted DensityData object, an FCS sample name, 
+	# the predicted population name, true gate assignments and parent population expressions.
+	# It gates the child population using the predicted gates and compares the result to 
+	# the true population in terms of precision, recall and effectively F1 score.
+
+	flEvalF1ScoreFCS(ddp, 
+					 fcs, 
+					 'bcell', 
+					 flSampleBcellEvaluationData[[fcs]]$gateAssignments, 
+					 flSampleBcellEvaluationData[[fcs]]$parentExprs, 
+					 F)
+
+})
+
+print(f1Scores)
+```
+
+It is visible that the previously selected prototype has perfect F1 = 1, because it predicted itself. 
+All other samples show very good performance.
+
+## Constructing DensityData objects
+
+As already mentioned above, `DensityData` is the main flowLearn data structure. All applications
+using flowLearn have to use it. The construction is easy:
+
+```{r}
+densdat <- flInit(new('DensityData'))
+```
+
+This results in an empty `DensityData` object with the following `1029` variables per density entry:
+
+* `fcs`: FCS file name of the density.
+* `population`: Analyzed population of the density.
+* `channelIdx`: Identifier of the channel for which the density was calculated.
+* 512 x-values of the density
+* 512 y-values of the density
+* `gate.low`: Lower threshold for this channel (defaults to NaN)
+* `gate.high`: Upper threshold for this channel (defaults to NaN)
+
+Now it is the task to add densities that can be used by flowLearn. This is done using the `flAdd()`
+method. Other methods of the `DensityData` class are given by `??flowLearn::DensityData`.
+
+```{r}
+# Use flEstimateDensity() to obtain a kernel density estimate that is smooth.
+# It is given a vector of cell measurements for one channel and the number of density features.
+# In this vignette example, the provided flSampleFlowFrame contains only two channels. 
+
+densA <- flEstimateDensity(flSampleFlowFrame@exprs[, 1], densdat@numFeatures)
+densB <- flEstimateDensity(flSampleFlowFrame@exprs[, 1], densdat@numFeatures)
+
+# Now add the densities to the `densdat` object.
+densdat <- flAdd(densdat, flSampleFlowFrame@description$"$FIL", 'granulocytepre', 1, densA$x, densA$y)
+densdat <- flAdd(densdat, flSampleFlowFrame@description$"$FIL", 'granulocytepre', 2, densB$x, densB$y)
+```
+
+We can now verify that the `DensityData` object contains two densities:
+
+```{r}
+print(flSize(densdat) == 2)
+```
+
+The newly constructed `DensityData` object does not contain threshold information, yet. For this to
+happen, they have to be either annotated manually or predicted.
