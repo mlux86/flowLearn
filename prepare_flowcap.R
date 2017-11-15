@@ -47,7 +47,7 @@ parSapply(cl, panels, function(panel)
 
 	# generate gating ground truth
 
-	densdat <- DensityData()
+	densdat <- new('DensityData')
 
 	filenames <- NULL
 	samples <- NULL

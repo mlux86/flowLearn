@@ -58,7 +58,7 @@ densdat.lst <- parLapply(cl, filenames, function(fname)
 		frames <- list()
 		frames$cd45 <- cd45	
 
-		densdat <- DensityData()
+		densdat <- new('DensityData')
 
 		for (i in 1:nrow(gateMeta))
 		{
@@ -129,6 +129,6 @@ densdat <- Reduce(function(x, y)
 		return(x)
 	}
 	return(flConcat(x, y)) 
-}, densdat.lst, flInit(DensityData()))
+}, densdat.lst, flInit(new('DensityData')))
 save(densdat, gatingInfos, sampleMeta, file = paste0(p, 'train_data.RData'))	
 

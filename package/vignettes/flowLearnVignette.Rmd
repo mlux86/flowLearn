@@ -176,7 +176,7 @@ As already mentioned above, `DensityData` is the main flowLearn data structure. 
 using flowLearn have to use it. The construction is easy:
 
 ```{r}
-densdat <- flInit(DensityData())
+densdat <- flInit(new('DensityData'))
 ```
 
 This results in an empty `DensityData` object with the following `1029` variables per density entry:

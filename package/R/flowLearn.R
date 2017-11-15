@@ -35,8 +35,9 @@ DensityData <- setClass("DensityData", slots = c(data = "data.frame", numFeature
 #' @return The initialized DensityData Object.
 #'
 #' @examples
-#' str(flInit(DensityData())) # summarizes an empty DensityData object that has just been initialized
+#' str(flInit(new('DensityData'))) # summarizes an empty DensityData object that has just been initialized
 #'       
+#' @export
 setGeneric(name = "flInit", def = function(obj) { standardGeneric("flInit") })
 
 setMethod(f = "flInit", signature = "DensityData",
@@ -65,9 +66,10 @@ setMethod(f = "flInit", signature = "DensityData",
 #' @return The supplied DensityData obj, including a new row with the supplied parameters.
 #'
 #' @examples
-#' densdat <- flInit(DensityData()) # create empty DensityData object
+#' densdat <- flInit(new('DensityData')) # create empty DensityData object
 #' densdat <- flAdd(densdat, 'mine.fcs', 'CD43+', 1, 1:512, runif(n = 512, min = 1, max = 10), 2, 7) # add one channel density 
 #'       
+#' @export
 setGeneric(name = "flAdd", def = function(obj, fcs, population, channelIdx, parentDensX, parentDensY, gate.low = NaN, gate.high = NaN) { standardGeneric("flAdd") })
 
 setMethod(f = "flAdd", signature = "DensityData",
@@ -92,6 +94,7 @@ setMethod(f = "flAdd", signature = "DensityData",
 #' dens <- flGetDensity(  flAt(flSampleDensdat, 42)  ) # grab density at row index 42 
 #' flPlotDensThresh(dens)
 #'       
+#' @export
 setGeneric(name = "flGetDensity", def = function(obj) { standardGeneric("flGetDensity") })
 
 setMethod(f = "flGetDensity", signature = "DensityData",
@@ -115,6 +118,7 @@ setMethod(f = "flGetDensity", signature = "DensityData",
 #' gt <- flGetGate(dd) # returns vector with "gate.low" and "gate.high"
 #' flPlotDensThresh(dens, gt)
 #'       
+#' @export
 setGeneric(name = "flGetGate", def = function(obj) { standardGeneric("flGetGate") })
 
 setMethod(f = "flGetGate", signature = "DensityData",
@@ -135,6 +139,7 @@ setMethod(f = "flGetGate", signature = "DensityData",
 #' # Get all densities for Population "hfa" and the first channel
 #' dd <- flFind(flSampleDensdat, 'population == "hfa" & channelIdx == 1')
 #'       
+#' @export
 setGeneric(name = "flFind", def = function(obj, mysubset) { standardGeneric("flFind") })
 
 setMethod(f = "flFind", signature = "DensityData",
@@ -156,6 +161,7 @@ setMethod(f = "flFind", signature = "DensityData",
 #' @examples
 #' dd <- flAt(flSampleDensdat, 42) # grab 42nd entry of flSampleDensdat
 #'       
+#' @export
 setGeneric(name = "flAt", def = function(obj, idx) { standardGeneric("flAt") })
 
 setMethod(f = "flAt", signature = "DensityData",
@@ -176,6 +182,7 @@ setMethod(f = "flAt", signature = "DensityData",
 #' @examples
 #' print(flSize(flSampleDensdat)) # print size of flSampleDensdat
 #'       
+#' @export
 setGeneric(name = "flSize", def = function(obj) { standardGeneric("flSize") })
 
 setMethod(f = "flSize", signature = "DensityData",
@@ -197,6 +204,7 @@ setMethod(f = "flSize", signature = "DensityData",
 #' dd <- flConcat(flSampleDensdat, flSampleDensdat)
 #' print(flSize(dd))
 #'       
+#' @export
 setGeneric(name = "flConcat", def = function(obj1, obj2) { standardGeneric("flConcat") })
 
 setMethod(f = "flConcat", signature = "DensityData",

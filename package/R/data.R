@@ -1,6 +1,11 @@
 #' Example DensityData object, containing three samples, 16 populations, and two channels each.
 #'
-#' A dataset containing the densities for three samples, 16 populations, and two channels each.
-#' The data is anonymized and was generated from a real-world flow cytometry project.
-#'
 "flSampleDensdat"
+
+#' Evaluation data to gate B-cells, used in flowLearnVignette.
+#'
+"flSampleBcellEvaluationData"
+
+#' Example data to show how to construct DensityData objects from flowFrames, used in flowLearnVignette.
+#'
+"flSampleFlowFrame"
