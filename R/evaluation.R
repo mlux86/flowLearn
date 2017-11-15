@@ -89,6 +89,8 @@ flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentEx
 #' 
 #' @return A vector of indices with low F1-scores.
 #'
+#' @importFrom stats quantile
+#' @importFrom stats IQR
 #' @export
 #'
 #' @examples
@@ -98,8 +100,8 @@ flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentEx
 #' 
 flIdentifyOutliersF1 <- function(f1s)
 {
-    quantiles <- quantile(f1s, na.rm = TRUE)
-    minn <- quantiles[[2]] - IQR(f1s, na.rm = TRUE) * 1.5
+    quantiles <- stats::quantile(f1s, na.rm = TRUE)
+    minn <- quantiles[[2]] - stats::IQR(f1s, na.rm = TRUE) * 1.5
     which(f1s < minn)
 }
 

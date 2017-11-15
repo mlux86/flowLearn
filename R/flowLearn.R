@@ -311,6 +311,8 @@ flDerivativeDtwDistanceMatrix <- function(densA, densB)
 #' 
 #' @return The Derivative Dynamic Time Warping object from the dtw package.
 #'
+#' @importFrom dtw dtw
+#' @importFrom dtw typeIds
 #' @export
 #'
 #' @examples
