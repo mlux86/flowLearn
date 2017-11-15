@@ -5,7 +5,7 @@
 \title{Given a DensityData object with existing thresholds, calculates precision, recall, F1-score, true and predicted cell proportions for one FCS file.}
 \usage{
 flEvalF1ScoreFCS(densdat, fcs, population, trueAssignments, parentExprs,
-  negate = F)
+  negate = FALSE)
 }
 \arguments{
 \item{densdat}{The full DensityData object with density and densities and set/predicted thresholds.}

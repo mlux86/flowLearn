@@ -160,7 +160,7 @@ f1Scores <- sapply(samples, function(fcs)
 					 'bcell', 
 					 flSampleBcellEvaluationData[[fcs]]$gateAssignments, 
 					 flSampleBcellEvaluationData[[fcs]]$parentExprs, 
-					 F)
+					 FALSE)
 
 })
 

@@ -4,7 +4,7 @@
 \alias{flGetGateAssignments}
 \title{Given a DensityData object with existing thresholds, returns a logical vector indicating cell memberships.}
 \usage{
-flGetGateAssignments(densdat, exprs, fcs, population, negate = F)
+flGetGateAssignments(densdat, exprs, fcs, population, negate = FALSE)
 }
 \arguments{
 \item{densdat}{The full DensityData object with density and densities and set/predicted thresholds.}

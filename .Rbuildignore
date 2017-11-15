@@ -3,3 +3,7 @@
 ^extra$
 ^tmp$
 ^.+\.tar.gz$
+^\.git$
+^README.md$
+^.+\.sublime-project$
+^.+\.sublime-workspace$

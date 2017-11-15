@@ -43,10 +43,10 @@ setGeneric(name = "flInit", def = function(obj) { standardGeneric("flInit") })
 setMethod(f = "flInit", signature = "DensityData",
                       definition = function(obj)
                       {
-                   	  	  df1 <- data.frame(fcs = character(0), population = character(0), channelIdx = integer(0), stringsAsFactors = F)
-                   	  	  df2 <- setNames(replicate(obj@numFeatures, integer(0), simplify = F), sapply(1:obj@numFeatures, function(i) { paste0('x.', i) }))
-                   	  	  df3 <- setNames(replicate(obj@numFeatures, integer(0), simplify = F), sapply(1:obj@numFeatures, function(i) { paste0('y.', i) }))
-                   	  	  df4 <- data.frame(gate.low = integer(0), gate.high = integer(0), stringsAsFactors = F)
+                   	  	  df1 <- data.frame(fcs = character(0), population = character(0), channelIdx = integer(0), stringsAsFactors = FALSE)
+                   	  	  df2 <- setNames(replicate(obj@numFeatures, integer(0), simplify = FALSE), sapply(1:obj@numFeatures, function(i) { paste0('x.', i) }))
+                   	  	  df3 <- setNames(replicate(obj@numFeatures, integer(0), simplify = FALSE), sapply(1:obj@numFeatures, function(i) { paste0('y.', i) }))
+                   	  	  df4 <- data.frame(gate.low = integer(0), gate.high = integer(0), stringsAsFactors = FALSE)
                    	  	  obj@data <- cbind(df1, df2, df3, df4)
                           return(obj)
                       }
@@ -75,10 +75,10 @@ setGeneric(name = "flAdd", def = function(obj, fcs, population, channelIdx, pare
 setMethod(f = "flAdd", signature = "DensityData",
                      definition = function(obj, fcs, population, channelIdx, parentDensX, parentDensY, gate.low = NaN, gate.high = NaN)
                      {
-                   	  	  df1 <- data.frame(fcs = fcs, population = population, channelIdx = channelIdx, stringsAsFactors = F)
-                   	  	  df2 <- as.data.frame(matrix(parentDensX, nrow = 1), stringsAsFactors = F); colnames(df2) <- sapply(1:obj@numFeatures, function(i) { paste0('x.', i) })
-                   	  	  df3 <- as.data.frame(matrix(parentDensY, nrow = 1), stringsAsFactors = F); colnames(df3) <- sapply(1:obj@numFeatures, function(i) { paste0('y.', i) })
-                   	  	  df4 <- data.frame(gate.low = gate.low, gate.high = gate.high, stringsAsFactors = F)
+                   	  	  df1 <- data.frame(fcs = fcs, population = population, channelIdx = channelIdx, stringsAsFactors = FALSE)
+                   	  	  df2 <- as.data.frame(matrix(parentDensX, nrow = 1), stringsAsFactors = FALSE); colnames(df2) <- sapply(1:obj@numFeatures, function(i) { paste0('x.', i) })
+                   	  	  df3 <- as.data.frame(matrix(parentDensY, nrow = 1), stringsAsFactors = FALSE); colnames(df3) <- sapply(1:obj@numFeatures, function(i) { paste0('y.', i) })
+                   	  	  df4 <- data.frame(gate.low = gate.low, gate.high = gate.high, stringsAsFactors = FALSE)
                    	  	  obj@data <- rbind(obj@data, cbind(df1, df2, df3, df4))
                           return(obj)
                      }
@@ -469,6 +469,8 @@ flPredictThresholds <- function(densdat, protoIdx)
 #' @param predicted The predicted threshold in the given density.
 #' @param xlab The label of the x-axis (defaults to "Channel")
 #' @param ylab The label of the y-axis (defaults to "Density")
+#' 
+#' @return Nothing
 #' 
 #' @export
 #'

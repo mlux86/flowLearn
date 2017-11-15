@@ -17,9 +17,9 @@
 #' flGetGateAssignments(flSampleDensdat, flSampleBcellEvaluationData[[f]]$parentExprs, f, 'bcell')
 #' 
 #'
-flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = F)
+flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = FALSE)
 {
-    predictedGateAssignments <- matrix(T, nrow(exprs), 1)
+    predictedGateAssignments <- matrix(TRUE, nrow(exprs), 1)
 
     nChan <- ncol(exprs)
 
@@ -70,7 +70,7 @@ flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = F)
 #' flEvalF1ScoreFCS(flSampleDensdat, f, 'bcell', flSampleBcellEvaluationData[[f]]$gateAssignments, flSampleBcellEvaluationData[[f]]$parentExprs, FALSE)
 #' 
 #'
-flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentExprs, negate = F)
+flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentExprs, negate = FALSE)
 {
     predictedGateAssignments <- flGetGateAssignments(densdat, parentExprs, fcs, population, negate)
 
@@ -98,8 +98,8 @@ flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentEx
 #' 
 flIdentifyOutliersF1 <- function(f1s)
 {
-    quantiles <- quantile(f1s, na.rm = T)
-    minn <- quantiles[[2]] - IQR(f1s, na.rm = T) * 1.5
+    quantiles <- quantile(f1s, na.rm = TRUE)
+    minn <- quantiles[[2]] - IQR(f1s, na.rm = TRUE) * 1.5
     which(f1s < minn)
 }
 

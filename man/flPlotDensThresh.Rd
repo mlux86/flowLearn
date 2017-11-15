@@ -18,6 +18,9 @@ flPlotDensThresh(dens, thresh = NULL, predicted = NULL, xlab = "Channel",
 
 \item{ylab}{The label of the y-axis (defaults to "Density")}
 }
+\value{
+Nothing
+}
 \description{
 Plots a given density and true/predicted thresholds, if supplied. True thresholds are drawn as red lines. Predicted thresholds are drawn as blue lines.
 If no thresholds are specified, they are not drawn.
