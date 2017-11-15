@@ -29,7 +29,7 @@ This method gates each cell and compares the result to a true vector of true cel
 \examples{
 # In this example, we evaluate true against the true gate assignments, hence it should give perfect performance, i.e. F_1 = 1
 
-f <- unique(flSampleDensdat@data$fcs)[[1]]
+f <- unique(flData(flSampleDensdat)$fcs)[[1]]
 flEvalF1ScoreFCS(flSampleDensdat, f, 'bcell', flSampleBcellEvaluationData[[f]]$gateAssignments, flSampleBcellEvaluationData[[f]]$parentExprs, FALSE)
 
 

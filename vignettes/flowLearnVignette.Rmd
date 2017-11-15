@@ -68,8 +68,8 @@ in mind that one sample contains around 300k to 500k cells.
 Let's print the example samples and populations:
 
 ```{r}
-samples <- unique(flSampleDensdat@data$fcs)
-populations <- unique(flSampleDensdat@data$population)
+samples <- unique(flData(flSampleDensdat)$fcs)
+populations <- unique(flData(flSampleDensdat)$population)
 print(samples)
 print(populations)
 ```

@@ -28,6 +28,32 @@ setClass("GatingInfo", representation(population = "character", parent = "charac
 #' @export
 DensityData <- setClass("DensityData", slots = c(data = "data.frame", numFeatures = 'numeric'), prototype = list(data = data.frame(), numFeatures = 512))
 
+#' Getter for the "data" slot
+#'
+#' @param obj A DensityData object.
+#'
+#' @return The internal data frame "data"
+#'
+#' @examples
+#' flData(flSampleDensdat)
+#'       
+#' @export
+setGeneric(name = "flData", def = function(obj) { standardGeneric("flData") })
+setMethod(f = "flData", signature = "DensityData", definition = function(obj) { return(obj@data) })
+
+#' Getter for the "numFeatures" slot
+#'
+#' @param obj A DensityData object.
+#'
+#' @return The number of features used by this DensityData
+#'
+#' @examples
+#' flNumFeatures(flSampleDensdat)
+#'       
+#' @export
+setGeneric(name = "flNumFeatures", def = function(obj) { standardGeneric("flNumFeatures") })
+setMethod(f = "flNumFeatures", signature = "DensityData", definition = function(obj) { return(obj@numFeatures) })
+
 #' Initializes a DensityData object with default values
 #'
 #' @param obj An uninitialized DensityData object.

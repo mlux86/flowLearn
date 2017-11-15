@@ -8,7 +8,7 @@ printf <- function(...) invisible(cat(sprintf(...)))
 
 flEvalF1ScorePopulation <- function(densdat, population)
 {
-	fcsFiles <- as.character(unique(densdat@data$fcs))
+	fcsFiles <- as.character(unique(flData(densdat)$fcs))
 	df <- ldply(fcsFiles, function(fcs) 
 	{
 		return(flEvalF1ScoreFCS(densdat, fcs, population))
@@ -29,9 +29,9 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
         rownames(pm) <- pm$normalized
     }
 
-    fcsFiles <- unique(densdat@data$fcs)
+    fcsFiles <- unique(flData(densdat)$fcs)
     nSamples <- length(fcsFiles)
-    populations <- as.character(unique(densdat@data$population))
+    populations <- as.character(unique(flData(densdat)$population))
 
     f1s <- matrix(NaN, nSamples, length(populations)) # F1 scores
     tp <- matrix(NaN, nSamples, length(populations)) # true proportions
@@ -141,7 +141,7 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
 
 flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = F)
 {
-    nSamples <- length(unique(densdat@data$fcs))
+    nSamples <- length(unique(flData(densdat)$fcs))
 
     dd <- flFind(densdat, sprintf('population == "%s" & channelIdx == %d', pop, chan))
     protoIdx <- flSelectPrototypes(dd, numProto)
@@ -189,7 +189,7 @@ flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = 
 
 flPlotPopulation <- function(densdat, pop)
 {
-    nSamples <- length(unique(densdat@data$fcs))
+    nSamples <- length(unique(flData(densdat)$fcs))
 
     dd1 <- flFind(densdat, sprintf('population == "%s" & channelIdx == 1', pop))
     dd2 <- flFind(densdat, sprintf('population == "%s" & channelIdx == 2', pop))
