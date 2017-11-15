@@ -1,7 +1,6 @@
-man
-inst
+trainingFiles*
+results*
+scratchpad.R
+package/man
+package/inst
 tmp
-flowLearn.Rproj
-flowLearn.sublime-project
-flowLearn.sublime-workspace
-*.tar.gz

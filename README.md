@@ -26,15 +26,16 @@ iteratively improve the initial training.
 
 - FlowLearn is very well documented and provides a quick start vignette with some example data.
 
-- Clone the repository and build the `R` package using `devtools::install(build_vignettes = T)`
+- Clone the repository and build the `R` package using `devtools::install('package', build_vignettes = T)`
 
 - Load the package using `library(flowLearn)` and view the quick-start vignette using `vignette('flowLearnVignette')`.
 
-## Extra files in the repository
+## Files in the repository
 
-- `extra/eval.R` and `extra/eval.sh`: Scripts used for evaluating flowLearn on different data sets
-- `extra/prepare_*` scripts: Converting raw FCS files into flowLearn's custom `DensityData` format 
-- `extra/comparisons/` Scripts for running and evaluating flowSOM and DeepCyTOF on the mice data set.
+- `package/`: The `R` package of flowLearn
+- `eval.R` and `eval.sh`: Scripts used for evaluating flowLearn on different data sets
+- `prepare_*` scripts: Converting raw FCS files into flowLearn's custom `DensityData` format 
+- `comparisons/` Scripts for running and evaluating flowSOM and DeepCyTOF on the mice data set.
 
 ## Licensing
 
