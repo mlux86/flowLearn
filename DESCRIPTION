@@ -13,7 +13,7 @@ License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-    proxy,dtw,parallel,stringr,cluster
+    stats,dtw,parallel,stringr,cluster
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown

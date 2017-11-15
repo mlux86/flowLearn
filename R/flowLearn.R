@@ -274,6 +274,7 @@ flEstimateDensity <- function(data, n)
 #' 
 #' @return The Derivative Dynamic Time Warping distance matrix between densA and densB.
 #'
+#' @importFrom proxy dist
 #' @export
 #'
 #' @examples
@@ -336,6 +337,7 @@ flDtwMain <- function(densA, densB, ...)
 #' 
 #' @return Vector of indices in the densdat data that were determined to be prototypes.
 #'
+#' @importFrom proxy dist
 #' @export
 #'
 #' @examples
