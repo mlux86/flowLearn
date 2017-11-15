@@ -2,4 +2,5 @@ trainingFiles*
 results*
 scratchpad.R
 package/man
+package/inst
 tmp
