@@ -36,6 +36,7 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
     f1s <- matrix(NaN, nSamples, length(populations)) # F1 scores
     tp <- matrix(NaN, nSamples, length(populations)) # true proportions
     pp <- matrix(NaN, nSamples, length(populations)) # predicted proportions
+    
 
     rownames(f1s) <- fcsFiles
     rownames(tp) <- fcsFiles
@@ -185,6 +186,42 @@ flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = 
         }
         readline()
     }
+}
+
+flBla <- function(densdat, numProto)
+{
+    allpops <- unique(densdat@data$population)
+
+    t <- NULL
+    p <- NULL
+    minX <- NULL
+    maxX <- NULL
+
+    for (pop in allpops)
+    {
+        print(pop)
+
+        for (chan in c(1, 2))
+        {
+            dd <- flFind(densdat, sprintf('population == "%s" & channelIdx == %d', pop, chan))
+            protoIdx <- flSelectPrototypes(dd, numProto)
+            ddp <- flPredictThresholds(dd, protoIdx)
+            minX <- c(minX, as.vector(replicate(2, dd@data$x.1)))
+            maxX <- c(maxX, as.vector(replicate(2, dd@data$x.512)))
+            t <- c(t, flGetGate(dd)[, 1])
+            p <- c(p, flGetGate(ddp)[, 1])
+            t <- c(t, flGetGate(dd)[, 2])
+            p <- c(p, flGetGate(ddp)[, 2])
+        }
+    }
+
+    res <- data.frame(true = t, predicted = p, min = minX, max = maxX)
+    rmIdx <- which(res$true < res$min | res$true > res$max)
+    if(length(rmIdx) > 0)
+    {
+        res[rmIdx, 'predicted'] <- NA # filter irrelevant thresholds
+    }
+    res
 }
 
 flPlotPopulation <- function(densdat, pop)

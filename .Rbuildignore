@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^extra$
+^tmp$
+^.+\.tar.gz$
