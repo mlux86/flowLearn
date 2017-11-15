@@ -1,6 +1,6 @@
 Package: flowLearn
 Title: flowLearn
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: person("Markus", "Lux", email = "mlux@techfak.uni-bielefeld.de", role = c("aut", "cre"))
 Author: Markus Lux [aut, cre]
 Maintainer: Markus Lux <mlux@techfak.uni-bielefeld.de>
@@ -13,7 +13,7 @@ License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-    stats,dtw,parallel,stringr,cluster
+    proxy,stats,dtw,parallel,stringr,cluster
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown
