@@ -155,6 +155,8 @@ f1Scores <- sapply(samples, function(fcs)
 	# It gates the child population using the predicted gates and compares the result to 
 	# the true population in terms of precision, recall and effectively F1 score.
 
+  flSampleBcellEvaluationData <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleBcellEvaluationData.rds')))
+  
 	flEvalF1ScoreFCS(ddp, 
 					 fcs, 
 					 'bcell', 
@@ -196,6 +198,8 @@ method. Other methods of the `DensityData` class are given by `??flowLearn::Dens
 # Use flEstimateDensity() to obtain a kernel density estimate that is smooth.
 # It is given a vector of cell measurements for one channel and the number of density features.
 # In this vignette example, the provided flSampleFlowFrame contains only two channels. 
+
+flSampleFlowFrame <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleFlowFrame.rds')))
 
 densA <- flEstimateDensity(flSampleFlowFrame@exprs[, 1], densdat@numFeatures)
 densB <- flEstimateDensity(flSampleFlowFrame@exprs[, 1], densdat@numFeatures)
