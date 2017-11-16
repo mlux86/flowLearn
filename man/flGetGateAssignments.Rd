@@ -24,6 +24,7 @@ A vector of length n, indicating cell membership to the population of interest.
 This method gates each cell and indicates whether it belongs to the given target population or not. For that, the method needs the original expression matrix.
 }
 \examples{
+flSampleBcellEvaluationData <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleBcellEvaluationData.rds')))
 f <- unique(flData(flSampleDensdat)$fcs)[[1]]
 flGetGateAssignments(flSampleDensdat, flSampleBcellEvaluationData[[f]]$parentExprs, f, 'bcell')
 
