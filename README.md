@@ -25,8 +25,13 @@ iteratively improve the initial training.
 ## Using this software
 
 - **IMPORTANT: To meet the requirements of Bioconductor, the minimum `R` version has been changed to
+<<<<<<< HEAD
   3.5.** There, it is currently under review. However, flowLearn still works with the latest stable
   version of `R` (3.4). You may change that in the `DESCRIPTION` file.
+=======
+  3.5.** where it is currently under review. However, flowLearn still works with the latest stable
+  version of `R` (3.4). You may change in the `DESCRIPTION` file.
+>>>>>>> b1ab3fe7f16f216cdfda1de20e87d8371cea43f4
 
 - FlowLearn is very well documented and provides a quick start vignette with some example data.
 
