@@ -1,6 +1,6 @@
 Package: flowLearn
 Title: flowLearn
-Version: 0.99.6
+Version: 0.99.7
 Authors@R: person("Markus", "Lux", email = "mlux@techfak.uni-bielefeld.de", role = c("aut", "cre"))
 Author: Markus Lux [aut, cre]
 Maintainer: Markus Lux <mlux@techfak.uni-bielefeld.de>
