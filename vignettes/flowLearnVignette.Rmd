@@ -149,8 +149,6 @@ the $F_1$-scores. For that, we compare the predicted to the true gate assignment
 
 ```{r, fig.width=7, fig.height=5}
 # Calculate the F1 score for each sample
-flSampleBcellEvaluationData <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleBcellEvaluationData.rds')))
-
 f1Scores <- sapply(samples, function(fcs)
 {
 
@@ -197,7 +195,6 @@ Now it is the task to add densities that can be used by flowLearn. This is done 
 method. Other methods of the `DensityData` class are given by `??flowLearn::DensityData`.
 
 ```{r}
-flSampleFlowFrame <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleFlowFrame.rds')))
 densdat <- flAddFlowFrame(densdat, flSampleFlowFrame, c(1, 2), 'granulocytepre')
 
 ```
@@ -215,8 +212,6 @@ A more detailed way of adding densities is given by the direct use of `flAdd()`:
 # It is given a vector of cell measurements for one channel and the number of density features.
 # In this vignette example, the provided flSampleFlowFrame contains only two channels.
 densdat <- flInit(new('DensityData'))
-
-flSampleFlowFrame <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleFlowFrame.rds')))
 
 densA <- flEstimateDensity(flSampleFlowFrame@exprs[, 1], densdat@numFeatures)
 densB <- flEstimateDensity(flSampleFlowFrame@exprs[, 1], densdat@numFeatures)

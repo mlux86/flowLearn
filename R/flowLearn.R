@@ -122,7 +122,6 @@ setMethod(f = "flAdd", signature = "DensityData",
 #'
 #' @examples
 #' densdat <- flInit(new('DensityData'))
-#' flSampleFlowFrame <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleFlowFrame.rds')))
 #' densdat <- flAddFlowFrame(densdat, flSampleFlowFrame, c(1,2), 'Granulocyte Pre')
 #'
 #' @export
