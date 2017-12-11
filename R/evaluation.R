@@ -26,19 +26,19 @@ flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = FALSE
 
     for (i in 1:nChan)
     {
-    	tmp <- flFind(densdat, fcs = fcs, population = population, channelIdx = i)
+        tmp <- flFind(densdat, fcs = fcs, population = population, channelIdx = i)
 
-    	g.l <- flGetGate(tmp)[1]
-    	g.h <- flGetGate(tmp)[2]
+        g.l <- flGetGate(tmp)[1]
+        g.h <- flGetGate(tmp)[2]
 
-	    if (!is.na(g.l))
-	    {
-	        predictedGateAssignments <- predictedGateAssignments & (exprs[,i] > g.l)
-	    }
-	    if (!is.na(g.h))
-	    {
-	        predictedGateAssignments <- predictedGateAssignments & (exprs[,i] < g.h)
-	    }
+        if (!is.na(g.l))
+        {
+            predictedGateAssignments <- predictedGateAssignments & (exprs[,i] > g.l)
+        }
+        if (!is.na(g.h))
+        {
+            predictedGateAssignments <- predictedGateAssignments & (exprs[,i] < g.h)
+        }
     }
 
     if (negate)

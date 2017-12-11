@@ -31,7 +31,7 @@ for (i in 1:nrow(gateMeta))
 	popName <- gateMeta[i, "population"]
 	parentName <- gateMeta[i, "parent"]
 	channelIndices <- c(gateMeta[i, "channelA"], gateMeta[i, "channelB"])
-	gatingInfos[[popName]] <- new("GatingInfo", population = popName, parent = parentName, channels = channelIndices)	
+	gatingInfos[[popName]] <- new("GatingInfo", population = popName, parent = parentName, channels = channelIndices)
 }
 
 # generate gating ground truth
@@ -39,10 +39,10 @@ for (i in 1:nrow(gateMeta))
 filenames <- dir(cd45Path)
 
 cl <- parallel::makeCluster(parallel::detectCores(), type = "FORK", outfile = "")
-densdat.lst <- parLapply(cl, filenames, function(fname) 
+densdat.lst <- parLapply(cl, filenames, function(fname)
 {
 	barcode <- sub('.*(L[0-9]+).*', '\\1', fname)
-	
+
 	print(barcode)
 
 	tryCatch(
@@ -56,7 +56,7 @@ densdat.lst <- parLapply(cl, filenames, function(fname)
 		cd4 <- read.FCS(cd45Path)
 
 		frames <- list()
-		frames$cd45 <- cd45	
+		frames$cd45 <- cd45
 
 		densdat <- new('DensityData')
 
@@ -72,19 +72,19 @@ densdat.lst <- parLapply(cl, filenames, function(fname)
 
 			parentIndices <- replicate(nrow(parentFrame@exprs), T)
 			if (!is.na(thresholds$thresholdALow))
-			{ 
+			{
 				parentIndices <- parentIndices & (parentFrame@exprs[, channelIndices[1]] > thresholds$thresholdALow)
 			}
 			if (!is.na(thresholds$thresholdAHigh))
-			{ 
+			{
 				parentIndices <- parentIndices & (parentFrame@exprs[, channelIndices[1]] < thresholds$thresholdAHigh)
 			}
 			if (!is.na(thresholds$thresholdBLow))
-			{ 
+			{
 				parentIndices <- parentIndices & (parentFrame@exprs[, channelIndices[2]] > thresholds$thresholdBLow)
 			}
 			if (!is.na(thresholds$thresholdBHigh))
-			{ 
+			{
 				parentIndices <- parentIndices & (parentFrame@exprs[, channelIndices[2]] < thresholds$thresholdBHigh)
 			}
 
@@ -106,7 +106,7 @@ densdat.lst <- parLapply(cl, filenames, function(fname)
 			evaldat <- list(parentFrame = parentFrame@exprs[, channelIndices], indices = parentIndices, negate = gateMeta[i, 'negate'])
 
 			saveRDS(evaldat, file = paste0(p, 'eval/', meta$"FCS files", '.', popName, '.eval.rds'))
-			
+
 		}
 
 		return(densdat)
@@ -122,13 +122,13 @@ densdat.lst <- parLapply(cl, filenames, function(fname)
 
 parallel::stopCluster(cl)
 
-densdat <- Reduce(function(x, y) 
-{ 
+densdat <- Reduce(function(x, y)
+{
 	if(is.na(y))
 	{
 		return(x)
 	}
-	return(flConcat(x, y)) 
+	return(flConcat(x, y))
 }, densdat.lst, flInit(new('DensityData')))
-save(densdat, gatingInfos, sampleMeta, file = paste0(p, 'train_data.RData'))	
+save(densdat, gatingInfos, sampleMeta, file = paste0(p, 'train_data.RData'))
 

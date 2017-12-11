@@ -67,16 +67,16 @@ setMethod(f = "flNumFeatures", signature = "DensityData", definition = function(
 setGeneric(name = "flInit", def = function(obj) { standardGeneric("flInit") })
 
 setMethod(f = "flInit", signature = "DensityData",
-                      definition = function(obj)
-                      {
-                   	  	  df1 <- data.frame(fcs = character(0), population = character(0), channelIdx = integer(0), stringsAsFactors = FALSE)
-                   	  	  df2 <- setNames(replicate(obj@numFeatures, integer(0), simplify = FALSE), sapply(1:obj@numFeatures, function(i) { paste0('x.', i) }))
-                   	  	  df3 <- setNames(replicate(obj@numFeatures, integer(0), simplify = FALSE), sapply(1:obj@numFeatures, function(i) { paste0('y.', i) }))
-                   	  	  df4 <- data.frame(gate.low = integer(0), gate.high = integer(0), stringsAsFactors = FALSE)
-                   	  	  obj@data <- cbind(df1, df2, df3, df4)
-                          return(obj)
-                      }
-                      )
+          definition = function(obj)
+          {
+              df1 <- data.frame(fcs = character(0), population = character(0), channelIdx = integer(0), stringsAsFactors = FALSE)
+              df2 <- setNames(replicate(obj@numFeatures, integer(0), simplify = FALSE), sapply(1:obj@numFeatures, function(i) { paste0('x.', i) }))
+              df3 <- setNames(replicate(obj@numFeatures, integer(0), simplify = FALSE), sapply(1:obj@numFeatures, function(i) { paste0('y.', i) }))
+              df4 <- data.frame(gate.low = integer(0), gate.high = integer(0), stringsAsFactors = FALSE)
+              obj@data <- cbind(df1, df2, df3, df4)
+              return(obj)
+          }
+          )
 
 #' Adds one row (i.e. one density) to an existing DensityData object.
 #'
@@ -99,16 +99,16 @@ setMethod(f = "flInit", signature = "DensityData",
 setGeneric(name = "flAdd", def = function(obj, fcs, population, channelIdx, parentDensX, parentDensY, gate.low = NaN, gate.high = NaN) { standardGeneric("flAdd") })
 
 setMethod(f = "flAdd", signature = "DensityData",
-                     definition = function(obj, fcs, population, channelIdx, parentDensX, parentDensY, gate.low = NaN, gate.high = NaN)
-                     {
-                   	  	  df1 <- data.frame(fcs = fcs, population = population, channelIdx = channelIdx, stringsAsFactors = FALSE)
-                   	  	  df2 <- as.data.frame(matrix(parentDensX, nrow = 1), stringsAsFactors = FALSE); colnames(df2) <- sapply(1:obj@numFeatures, function(i) { paste0('x.', i) })
-                   	  	  df3 <- as.data.frame(matrix(parentDensY, nrow = 1), stringsAsFactors = FALSE); colnames(df3) <- sapply(1:obj@numFeatures, function(i) { paste0('y.', i) })
-                   	  	  df4 <- data.frame(gate.low = gate.low, gate.high = gate.high, stringsAsFactors = FALSE)
-                   	  	  obj@data <- rbind(obj@data, cbind(df1, df2, df3, df4))
-                          return(obj)
-                     }
-                     )
+          definition = function(obj, fcs, population, channelIdx, parentDensX, parentDensY, gate.low = NaN, gate.high = NaN)
+          {
+              df1 <- data.frame(fcs = fcs, population = population, channelIdx = channelIdx, stringsAsFactors = FALSE)
+              df2 <- as.data.frame(matrix(parentDensX, nrow = 1), stringsAsFactors = FALSE); colnames(df2) <- sapply(1:obj@numFeatures, function(i) { paste0('x.', i) })
+              df3 <- as.data.frame(matrix(parentDensY, nrow = 1), stringsAsFactors = FALSE); colnames(df3) <- sapply(1:obj@numFeatures, function(i) { paste0('y.', i) })
+              df4 <- data.frame(gate.low = gate.low, gate.high = gate.high, stringsAsFactors = FALSE)
+              obj@data <- rbind(obj@data, cbind(df1, df2, df3, df4))
+              return(obj)
+          }
+          )
 
 #' Adds densities from a flowFrame that represents a parent cell population.
 #'
@@ -129,22 +129,22 @@ setMethod(f = "flAdd", signature = "DensityData",
 setGeneric(name = "flAddFlowFrame", def = function(obj, parentFlowFrame, channelIndices, populationName, fcsName = NULL) { standardGeneric("flAddFlowFrame") })
 
 setMethod(f = "flAddFlowFrame", signature = "DensityData",
-                      definition = function(obj, parentFlowFrame, channelIndices, populationName, fcsName = NULL)
-                      {
-                          if (is.null(fcsName))
-                          {
-                              fcsName <- parentFlowFrame@description$"$FIL"
-                          }
+          definition = function(obj, parentFlowFrame, channelIndices, populationName, fcsName = NULL)
+          {
+              if (is.null(fcsName))
+              {
+                  fcsName <- parentFlowFrame@description$"$FIL"
+              }
 
-                          for (c in channelIndices)
-                          {
-                              dens <- flEstimateDensity(parentFlowFrame@exprs[, c], obj@numFeatures)
-                              obj <- flAdd(obj, fcsName, populationName, c, dens$x, dens$y)
-                          }
+              for (c in channelIndices)
+              {
+                  dens <- flEstimateDensity(parentFlowFrame@exprs[, c], obj@numFeatures)
+                  obj <- flAdd(obj, fcsName, populationName, c, dens$x, dens$y)
+              }
 
-                          return(obj)
-                      }
-                      )
+              return(obj)
+          }
+          )
 
 #' Returns a list(x,y) with density x and y values for the given DensityData object. Usually this is called on DensityData objects with only one row, to extract a density for one specific channel.
 #'
@@ -160,13 +160,13 @@ setMethod(f = "flAddFlowFrame", signature = "DensityData",
 setGeneric(name = "flGetDensity", def = function(obj) { standardGeneric("flGetDensity") })
 
 setMethod(f = "flGetDensity", signature = "DensityData",
-                          definition = function(obj)
-                          {
-                          	  x <- as.matrix(obj@data[,4:(3+obj@numFeatures)])
-                          	  y <- as.matrix(obj@data[,516:(515+obj@numFeatures)])
-                          	  list(x = x, y = y)
-                          }
-                          )
+          definition = function(obj)
+          {
+              x <- as.matrix(obj@data[,4:(3+obj@numFeatures)])
+              y <- as.matrix(obj@data[,516:(515+obj@numFeatures)])
+              list(x = x, y = y)
+          }
+          )
 
 #' Returns a matrix with two columns which represent lower and upper thresholds of the given DensityData object.
 #'
@@ -184,11 +184,11 @@ setMethod(f = "flGetDensity", signature = "DensityData",
 setGeneric(name = "flGetGate", def = function(obj) { standardGeneric("flGetGate") })
 
 setMethod(f = "flGetGate", signature = "DensityData",
-                          definition = function(obj)
-                          {
-                          	  as.matrix(obj@data[,c('gate.low', 'gate.high')])
-                          }
-                          )
+          definition = function(obj)
+          {
+              as.matrix(obj@data[,c('gate.low', 'gate.high')])
+          }
+          )
 
 #' Returns a new DensityData object with a subset of entries of the supplied obj.
 #'
@@ -206,25 +206,25 @@ setMethod(f = "flGetGate", signature = "DensityData",
 setGeneric(name = "flFind", def = function(obj, fcs, population, channelIdx) { standardGeneric("flFind") })
 
 setMethod(f = "flFind", signature = "DensityData",
-                          definition = function(obj, fcs, population, channelIdx)
-                          {
-                              idx <- replicate(nrow(obj@data), TRUE)
-                              if (!missing(fcs))
-                              {
-                                  idx <- idx & obj@data$fcs == fcs
-                              }
-                              if (!missing(population))
-                              {
-                                  idx <- idx & obj@data$population == population
-                              }
-                              if (!missing(channelIdx))
-                              {
-                                  idx <- idx & obj@data$channelIdx == channelIdx
-                              }
-                              obj@data <- obj@data[idx,]
-                          	  return(obj)
-                          }
-                          )
+          definition = function(obj, fcs, population, channelIdx)
+          {
+              idx <- replicate(nrow(obj@data), TRUE)
+              if (!missing(fcs))
+              {
+                  idx <- idx & obj@data$fcs == fcs
+              }
+              if (!missing(population))
+              {
+                  idx <- idx & obj@data$population == population
+              }
+              if (!missing(channelIdx))
+              {
+                  idx <- idx & obj@data$channelIdx == channelIdx
+              }
+              obj@data <- obj@data[idx,]
+              return(obj)
+          }
+          )
 
 #' Returns a single density from the data slot at the specified row index.
 #'
@@ -240,13 +240,13 @@ setMethod(f = "flFind", signature = "DensityData",
 setGeneric(name = "flAt", def = function(obj, idx) { standardGeneric("flAt") })
 
 setMethod(f = "flAt", signature = "DensityData",
-                          definition = function(obj, idx)
-                          {
-                              newData <- obj@data[idx, ]
-                              rownames(newData) <- NULL
-                          	  initialize(obj, data = newData)
-                          }
-                          )
+          definition = function(obj, idx)
+          {
+              newData <- obj@data[idx, ]
+              rownames(newData) <- NULL
+              initialize(obj, data = newData)
+          }
+          )
 
 #' Returns the size of a given DensityData object.
 #'
@@ -261,11 +261,11 @@ setMethod(f = "flAt", signature = "DensityData",
 setGeneric(name = "flSize", def = function(obj) { standardGeneric("flSize") })
 
 setMethod(f = "flSize", signature = "DensityData",
-                          definition = function(obj)
-                          {
-                          	  nrow(obj@data)
-                          }
-                          )
+          definition = function(obj)
+          {
+              nrow(obj@data)
+          }
+          )
 
 #' Concatenates two DensityData objects.
 #'
@@ -283,11 +283,11 @@ setMethod(f = "flSize", signature = "DensityData",
 setGeneric(name = "flConcat", def = function(obj1, obj2) { standardGeneric("flConcat") })
 
 setMethod(f = "flConcat", signature = "DensityData",
-                          definition = function(obj1, obj2)
-                          {
-                              DensityData(data = rbind(obj1@data, obj2@data), numFeatures = obj1@numFeatures)
-                          }
-                          )
+          definition = function(obj1, obj2)
+          {
+              DensityData(data = rbind(obj1@data, obj2@data), numFeatures = obj1@numFeatures)
+          }
+          )
 
 #' Normalizes population names, such that they can be used, for example in file names.
 #'
@@ -334,10 +334,10 @@ flNormalizePopulationName <- function(population)
 #'
 flEstimateDensity <- function(data, n)
 {
-  dens <- stats::density(data[which(!is.na(data))], n = n, from = 0)
-  dens <- stats::smooth.spline(dens$x, dens$y, spar=0.4)
-  dens$y[which(dens$y<0)] <- 0
-  return(dens)
+    dens <- stats::density(data[which(!is.na(data))], n = n, from = 0)
+    dens <- stats::smooth.spline(dens$x, dens$y, spar=0.4)
+    dens$y[which(dens$y<0)] <- 0
+    return(dens)
 }
 
 #' Given two R density objects, calculates a distance matrix based on the derivative DTW distance.
@@ -359,8 +359,8 @@ flEstimateDensity <- function(data, n)
 #'
 flDerivativeDtwDistanceMatrix <- function(densA, densB)
 {
-	lenA <- length(densA$y)
-	lenB <- length(densB$y)
+    lenA <- length(densA$y)
+    lenB <- length(densB$y)
 
     if(lenA != lenB)
     {
@@ -506,33 +506,33 @@ flAlignThreshold <- function(dens, refDens, refThreshold)
 #'
 flPredictThresholds <- function(densdat, protoIdx)
 {
-	n <- flSize(densdat)
-	nProto <- length(protoIdx)
+    n <- flSize(densdat)
+    nProto <- length(protoIdx)
 
-	testIdx <- setdiff(1:n, protoIdx)
-	nTest <- length(testIdx)
+    testIdx <- setdiff(1:n, protoIdx)
+    nTest <- length(testIdx)
 
-	D <- as.matrix(dist(flGetDensity(densdat)$y, method = 'manhattan'))
+    D <- as.matrix(dist(flGetDensity(densdat)$y, method = 'manhattan'))
 
 
-  tryCatch({
+    tryCatch({
 
-      predicted <- BiocParallel::bplapply(testIdx, function(i)
-      {
-          j <- order(D[protoIdx, i])[1]
-          g.l <- flAlignThreshold(flGetDensity(flAt(densdat, i)), flGetDensity(flAt(densdat, protoIdx[j])), flGetGate(flAt(densdat, protoIdx[j]))[1])
-          g.h <- flAlignThreshold(flGetDensity(flAt(densdat, i)), flGetDensity(flAt(densdat, protoIdx[j])), flGetGate(flAt(densdat, protoIdx[j]))[2])
-          c(g.l, g.h)
-      }, BPPARAM = BiocParallel::SnowParam(type = "FORK"))
-      predicted <- do.call(rbind, predicted)
+        predicted <- BiocParallel::bplapply(testIdx, function(i)
+                                            {
+                                                j <- order(D[protoIdx, i])[1]
+                                                g.l <- flAlignThreshold(flGetDensity(flAt(densdat, i)), flGetDensity(flAt(densdat, protoIdx[j])), flGetGate(flAt(densdat, protoIdx[j]))[1])
+                                                g.h <- flAlignThreshold(flGetDensity(flAt(densdat, i)), flGetDensity(flAt(densdat, protoIdx[j])), flGetGate(flAt(densdat, protoIdx[j]))[2])
+                                                c(g.l, g.h)
+                                            }, BPPARAM = BiocParallel::SnowParam(type = "FORK"))
+        predicted <- do.call(rbind, predicted)
 
-	    ndim <- ncol(densdat@data)
-	    densdat@data[testIdx, c(ndim-1, ndim)] <- predicted
-		return(densdat)
+        ndim <- ncol(densdat@data)
+        densdat@data[testIdx, c(ndim-1, ndim)] <- predicted
+        return(densdat)
 
-	}, error = function(e) {
-		print(e)
-	})
+    }, error = function(e) {
+        print(e)
+    })
 
 }
 
@@ -567,7 +567,7 @@ flPlotDensThresh <- function(dens, thresh = NULL, predicted = NULL, xlab = "Chan
          xlab = xlab,
          ylab = ylab,
          type = 'o'
-        );
+         );
 
     if(!is.null(thresh))
     {

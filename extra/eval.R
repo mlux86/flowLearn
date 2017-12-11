@@ -8,13 +8,13 @@ printf <- function(...) invisible(cat(sprintf(...)))
 
 flEvalF1ScorePopulation <- function(densdat, population)
 {
-	fcsFiles <- as.character(unique(flData(densdat)$fcs))
-	df <- ldply(fcsFiles, function(fcs)
-	{
-		return(flEvalF1ScoreFCS(densdat, fcs, population))
-	})
-	rownames(df) <- fcsFiles
-	return(df)
+    fcsFiles <- as.character(unique(flData(densdat)$fcs))
+    df <- ldply(fcsFiles, function(fcs)
+                {
+                    return(flEvalF1ScoreFCS(densdat, fcs, population))
+                })
+    rownames(df) <- fcsFiles
+    return(df)
 }
 
 flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix = '~/flowlearn.traindat/flowlearn.traindat.')
