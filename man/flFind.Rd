@@ -11,7 +11,7 @@ flFind(obj, fcs, population, channelIdx)
 
 \item{population}{The population to filter for.}
 
-\item{channel}{The channel to filter for.}
+\item{channelIdx}{The channel to filter for.}
 }
 \value{
 A new DensityData object with a subset of entries, defined by mysubset.

@@ -193,7 +193,7 @@ setMethod(f = "flGetGate", signature = "DensityData",
 #'
 #' @param fcs The FCS file to filter for.
 #' @param population The population to filter for.
-#' @param channel The channel to filter for.
+#' @param channelIdx The channel to filter for.
 #'
 #' @return A new DensityData object with a subset of entries, defined by mysubset.
 #'
@@ -522,7 +522,7 @@ flPredictThresholds <- function(densdat, protoIdx)
                                                 g.l <- flAlignThreshold(flGetDensity(flAt(densdat, i)), flGetDensity(flAt(densdat, protoIdx[j])), flGetGate(flAt(densdat, protoIdx[j]))[1])
                                                 g.h <- flAlignThreshold(flGetDensity(flAt(densdat, i)), flGetDensity(flAt(densdat, protoIdx[j])), flGetGate(flAt(densdat, protoIdx[j]))[2])
                                                 c(g.l, g.h)
-                                            }, BPPARAM = BiocParallel::SnowParam(type = "FORK"))
+                                            })
         predicted <- do.call(rbind, predicted)
 
         ndim <- ncol(densdat@data)
