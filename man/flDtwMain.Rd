@@ -20,7 +20,7 @@ The Derivative Dynamic Time Warping object from the dtw package.
 Wrapper function to carry out Derivative Dynamic Time Warping for flowLearn. It uses Derivative DTW with a DTW specific step pattern, which is "typeIds" from the dtw package.
 }
 \examples{
-dd <- flFind(flSampleDensdat, 'population == "cd3tcell" & channelIdx == 1')
+dd <- flFind(flSampleDensdat, population = 'cd3tcell', channelIdx = 1)
 dtwObj <- flDtwMain(flGetDensity(flAt(dd, 1)), flGetDensity(flAt(dd, 2)))
 plot(dtwObj)
 

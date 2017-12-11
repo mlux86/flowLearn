@@ -9,7 +9,7 @@ printf <- function(...) invisible(cat(sprintf(...)))
 flEvalF1ScorePopulation <- function(densdat, population)
 {
 	fcsFiles <- as.character(unique(flData(densdat)$fcs))
-	df <- ldply(fcsFiles, function(fcs) 
+	df <- ldply(fcsFiles, function(fcs)
 	{
 		return(flEvalF1ScoreFCS(densdat, fcs, population))
 	})
@@ -18,7 +18,7 @@ flEvalF1ScorePopulation <- function(densdat, population)
 }
 
 flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix = '~/flowlearn.traindat/flowlearn.traindat.')
-{   
+{
     flowLearnEvaluationFolder <<- paste0(traindatFolderPrefix, datasetName, '/')
 
     load(paste0(flowLearnEvaluationFolder, 'train_data.RData'))
@@ -52,8 +52,8 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
             # start.time <- Sys.time()
 
             # predict
-            dd1 <- flFind(densdat, sprintf('population == "%s" & channelIdx == 1', population))
-            dd2 <- flFind(densdat, sprintf('population == "%s" & channelIdx == 2', population))
+            dd1 <- flFind(densdat, population = population, channelIdx = 1)
+            dd2 <- flFind(densdat, population = population, channelIdx = 2)
             protoIdx1 <- flSelectPrototypes(dd1, numProtoPerChannel)
             protoIdx2 <- flSelectPrototypes(dd2, numProtoPerChannel)
             ddp1 <- flPredictThresholds(dd1, protoIdx1)
@@ -75,7 +75,7 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
             tp[testIdx, i] <- e$trueProportion
             pp[testIdx, i] <- e$predictedProportion
 
-        }, error = function(e) 
+        }, error = function(e)
         {
             print(paste0("Error in population ", population))
             print(e)
@@ -90,11 +90,11 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
     }
 
     dfEval <- as.data.frame(f1s)
-    colnames(dfEval) <- populations    
+    colnames(dfEval) <- populations
     dfEvalTp <- as.data.frame(tp)
-    colnames(dfEvalTp) <- populations    
+    colnames(dfEvalTp) <- populations
     dfEvalPp <- as.data.frame(pp)
-    colnames(dfEvalPp) <- populations  
+    colnames(dfEvalPp) <- populations
 
     nanidx <- which(sapply(dfEval, function(x) { sum(is.nan(x)) == nrow(dfEval) }))
     if(length(nanidx) > 0)
@@ -116,8 +116,8 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
 
     print(p)
 
-    ggsave(sprintf('results/eval_f1_%s_%02d.png', datasetName, numProtoPerChannel))    
-    ggsave(sprintf('results/eval_f1_%s_%02d.eps', datasetName, numProtoPerChannel))    
+    ggsave(sprintf('results/eval_f1_%s_%02d.png', datasetName, numProtoPerChannel))
+    ggsave(sprintf('results/eval_f1_%s_%02d.eps', datasetName, numProtoPerChannel))
 
     s1 <- stack(dfEvalTp)
     s1$proportionType = 'true'
@@ -135,17 +135,17 @@ flEvalDataset <- function(datasetName, numProtoPerChannel, traindatFolderPrefix 
 
     print(p2)
 
-    ggsave(sprintf('results/eval_proportion_%s_%02d.png', datasetName, numProtoPerChannel))        
-    ggsave(sprintf('results/eval_proportion_%s_%02d.eps', datasetName, numProtoPerChannel))        
+    ggsave(sprintf('results/eval_proportion_%s_%02d.png', datasetName, numProtoPerChannel))
+    ggsave(sprintf('results/eval_proportion_%s_%02d.eps', datasetName, numProtoPerChannel))
 }
 
 flPlotPredictions <- function(densdat, pop, chan, numProto, oneplot = T, save = F)
 {
     nSamples <- length(unique(flData(densdat)$fcs))
 
-    dd <- flFind(densdat, sprintf('population == "%s" & channelIdx == %d', pop, chan))
+    dd <- flFind(densdat, population = pop, channelIdx = chan)
     protoIdx <- flSelectPrototypes(dd, numProto)
-    ddp <- flPredictThresholds(dd, protoIdx)    
+    ddp <- flPredictThresholds(dd, protoIdx)
     D <- as.matrix(dist(flGetDensity(dd)$y, method = "manhattan"))
 
     if(!oneplot)
@@ -191,8 +191,8 @@ flPlotPopulation <- function(densdat, pop)
 {
     nSamples <- length(unique(flData(densdat)$fcs))
 
-    dd1 <- flFind(densdat, sprintf('population == "%s" & channelIdx == 1', pop))
-    dd2 <- flFind(densdat, sprintf('population == "%s" & channelIdx == 2', pop))
+    dd1 <- flFind(densdat, population = pop, channelIdx = 1)
+    dd2 <- flFind(densdat, population = pop, channelIdx = 2)
 
     ysne1 <- Rtsne(flGetDensity(dd1)$y, perplexity = log(nSamples^2))$Y
     ysne2 <- Rtsne(flGetDensity(dd2)$y, perplexity = log(nSamples^2))$Y

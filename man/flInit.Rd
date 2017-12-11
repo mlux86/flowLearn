@@ -17,5 +17,5 @@ Initializes a DensityData object with default values
 }
 \examples{
 str(flInit(new('DensityData'))) # summarizes an empty DensityData object that has just been initialized
-      
+
 }

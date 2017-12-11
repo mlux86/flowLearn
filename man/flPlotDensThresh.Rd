@@ -26,7 +26,7 @@ Plots a given density and true/predicted thresholds, if supplied. True threshold
 If no thresholds are specified, they are not drawn.
 }
 \examples{
-dd <- flFind(flSampleDensdat, 'population == "myeloid" & channelIdx == 1')
+dd <- flFind(flSampleDensdat, population = 'myeloid', channelIdx = 1)
 protoIdx <- flSelectPrototypes(dd, 1)
 ddp <- flPredictThresholds(dd, protoIdx)
 

@@ -32,6 +32,6 @@ Adds one row (i.e. one density) to an existing DensityData object.
 }
 \examples{
 densdat <- flInit(new('DensityData')) # create empty DensityData object
-densdat <- flAdd(densdat, 'mine.fcs', 'CD43+', 1, 1:512, runif(n = 512, min = 1, max = 10), 2, 7) # add one channel density 
-      
+densdat <- flAdd(densdat, 'mine.fcs', 'CD43+', 1, 1:512, runif(n = 512, min = 1, max = 10), 2, 7) # add one channel density
+
 }

@@ -18,8 +18,8 @@ A new DensityData object consisting of the internal "data" data frames of obj1 a
 Concatenates two DensityData objects.
 }
 \examples{
-print(flSize(flSampleDensdat))  
+print(flSize(flSampleDensdat))
 dd <- flConcat(flSampleDensdat, flSampleDensdat)
 print(flSize(dd))
-      
+
 }

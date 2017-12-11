@@ -7,7 +7,7 @@
 #' @param fcs The name of the FCS file to consider. This is needed to filter the relevant entries in densdat.
 #' @param population The name of the population to gate. This is needed to filter the relevant entries in densdat.
 #' @param negate Whether the gated population should be negated/inverted, i.e. not the cells within the gate but out of it are considered.
-#' 
+#'
 #' @return A vector of length n, indicating cell membership to the population of interest.
 #'
 #' @export
@@ -16,7 +16,7 @@
 #' flSampleBcellEvaluationData <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleBcellEvaluationData.rds')))
 #' f <- unique(flData(flSampleDensdat)$fcs)[[1]]
 #' flGetGateAssignments(flSampleDensdat, flSampleBcellEvaluationData[[f]]$parentExprs, f, 'bcell')
-#' 
+#'
 #'
 flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = FALSE)
 {
@@ -26,7 +26,7 @@ flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = FALSE
 
     for (i in 1:nChan)
     {
-    	tmp <- flFind(densdat, sprintf('fcs == "%s" & population == "%s" & channelIdx == "%d"', fcs, population, i))
+    	tmp <- flFind(densdat, fcs = fcs, population = population, channelIdx = i)
 
     	g.l <- flGetGate(tmp)[1]
     	g.h <- flGetGate(tmp)[2]
@@ -38,7 +38,7 @@ flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = FALSE
 	    if (!is.na(g.h))
 	    {
 	        predictedGateAssignments <- predictedGateAssignments & (exprs[,i] < g.h)
-	    }	    
+	    }
     }
 
     if (negate)
@@ -56,10 +56,10 @@ flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = FALSE
 #' @param densdat The full DensityData object with density and densities and set/predicted thresholds.
 #' @param fcs The name of the FCS file to consider. This is needed to filter the relevant entries in densdat.
 #' @param population The name of the population to gate. This is needed to filter the relevant entries in densdat.
-#' @param trueAssignments A vector of length <number of cells>, indicating true cell memberships of the target population. 
+#' @param trueAssignments A vector of length <number of cells>, indicating true cell memberships of the target population.
 #' @param parentExprs A n*d expression matrix of the parent population where n is the number of cells and d is the number of channels. The channel indices correspond to the channelIdx values in densdat.
 #' @param negate Whether the gated population should be negated/inverted, i.e. not the cells within the gate but out of it are considered.
-#' 
+#'
 #' @return A data.frame with precision, recall, f1, trueProportion, predictedProportion.
 #'
 #' @export
@@ -70,7 +70,7 @@ flGetGateAssignments <- function(densdat, exprs, fcs, population, negate = FALSE
 #' flSampleBcellEvaluationData <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleBcellEvaluationData.rds')))
 #' f <- unique(flData(flSampleDensdat)$fcs)[[1]]
 #' flEvalF1ScoreFCS(flSampleDensdat, f, 'bcell', flSampleBcellEvaluationData[[f]]$gateAssignments, flSampleBcellEvaluationData[[f]]$parentExprs, FALSE)
-#' 
+#'
 #'
 flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentExprs, negate = FALSE)
 {
@@ -88,7 +88,7 @@ flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentEx
 #' This method returns indices of samples with low F1-scores, using an outlier heuristic that considers all samples as outliers, when they are below the 25-percent-quantile - 1.5 * inter-quartile-range.
 #'
 #' @param f1s The list of F1-scores, one entry per sample.
-#' 
+#'
 #' @return A vector of indices with low F1-scores.
 #'
 #' @importFrom stats quantile
@@ -99,7 +99,7 @@ flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentEx
 #' f1s <- runif(99, min = 0.42, max = 0.84)
 #' f1s[100] <- 0
 #' flIdentifyOutliersF1(f1s)
-#' 
+#'
 flIdentifyOutliersF1 <- function(f1s)
 {
     quantiles <- stats::quantile(f1s, na.rm = TRUE)

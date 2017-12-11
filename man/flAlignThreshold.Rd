@@ -20,7 +20,7 @@ A double value representing the threshold that resulted from aligning both densi
 Uses Derivative Dynamic Time Warping to align a given density A with a reference density B and transfers a reference threshold fromB to A.
 }
 \examples{
-dd <- flFind(flSampleDensdat, 'population == "plasma" & channelIdx == 1')
+dd <- flFind(flSampleDensdat, population = 'plasma', channelIdx = 1)
 dens <- flGetDensity(flAt(dd, 1))
 trueThresh <- flGetGate(flAt(dd, 1))[1]
 refDens <- flGetDensity(flAt(dd, 2))

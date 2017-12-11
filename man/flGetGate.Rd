@@ -16,9 +16,9 @@ A matrix with columns "gate.low" and "gate.high", representing lower and upper t
 Returns a matrix with two columns which represent lower and upper thresholds of the given DensityData object.
 }
 \examples{
-dd <- flAt(flSampleDensdat, 42) # grab density at row index 42 
-dens <- flGetDensity(dd) # 
+dd <- flAt(flSampleDensdat, 42) # grab density at row index 42
+dens <- flGetDensity(dd) #
 gt <- flGetGate(dd) # returns vector with "gate.low" and "gate.high"
 flPlotDensThresh(dens, gt)
-      
+
 }

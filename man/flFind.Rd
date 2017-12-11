@@ -4,12 +4,14 @@
 \alias{flFind}
 \title{Returns a new DensityData object with a subset of entries of the supplied obj.}
 \usage{
-flFind(obj, mysubset)
+flFind(obj, fcs, population, channelIdx)
 }
 \arguments{
-\item{obj}{The DensityData object to be filtered.}
+\item{fcs}{The FCS file to filter for.}
 
-\item{mysubset}{A logical expression, combining columns of the DensityData object.}
+\item{population}{The population to filter for.}
+
+\item{channel}{The channel to filter for.}
 }
 \value{
 A new DensityData object with a subset of entries, defined by mysubset.
@@ -19,6 +21,6 @@ Returns a new DensityData object with a subset of entries of the supplied obj.
 }
 \examples{
 # Get all densities for Population "hfa" and the first channel
-dd <- flFind(flSampleDensdat, 'population == "hfa" & channelIdx == 1')
-      
+dd <- flFind(flSampleDensdat, population = 'hfa', channelIdx = 1)
+
 }

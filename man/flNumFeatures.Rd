@@ -17,5 +17,5 @@ Getter for the "numFeatures" slot
 }
 \examples{
 flNumFeatures(flSampleDensdat)
-      
+
 }

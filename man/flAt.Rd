@@ -19,5 +19,5 @@ Returns a single density from the data slot at the specified row index.
 }
 \examples{
 dd <- flAt(flSampleDensdat, 42) # grab 42nd entry of flSampleDensdat
-      
+
 }

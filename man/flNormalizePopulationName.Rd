@@ -17,7 +17,7 @@ In particular, '+' is replaced by 'p' (positive), '-' is replaced by 'n' (negati
 }
 \examples{
 popName <- 'IGD+ CD27-'
-popNameNormalized <- flNormalizePopulationName(popName)      
+popNameNormalized <- flNormalizePopulationName(popName)
 print(popNameNormalized)
 
 }

@@ -15,13 +15,13 @@ flPredictThresholds(densdat, protoIdx)
 A copy of densdat where non-prototype densities have predicted thresholds set.
 }
 \description{
-This method uses the prototypes specified in protoIdx to predict thresholds of all other (non-prototype indices) in densdat. 
+This method uses the prototypes specified in protoIdx to predict thresholds of all other (non-prototype indices) in densdat.
 For each density, it determines the nearest prototype density and calls flAlignThreshold to transfer lower and upper thresholds.
 Densities in densdat that are prototypes (specified by protoIdx) must have thresholds set.
 Existing non-prototype thresholds in densdat are replaced by predicted thresholds.
 }
 \examples{
-dd <- flFind(flSampleDensdat, 'population == "notplasma" & channelIdx == 2')
+dd <- flFind(flSampleDensdat, population = 'notplasma', channelIdx = 2)
 protoIdx <- flSelectPrototypes(dd, 1)
 ddp <- flPredictThresholds(dd, protoIdx)
 

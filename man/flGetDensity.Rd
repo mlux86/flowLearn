@@ -16,7 +16,7 @@ A list(x = matrix, y = matrix) with matrices x and y that represent x and y part
 Returns a list(x,y) with density x and y values for the given DensityData object. Usually this is called on DensityData objects with only one row, to extract a density for one specific channel.
 }
 \examples{
-dens <- flGetDensity(  flAt(flSampleDensdat, 42)  ) # grab density at row index 42 
+dens <- flGetDensity(  flAt(flSampleDensdat, 42)  ) # grab density at row index 42
 flPlotDensThresh(dens)
-      
+
 }

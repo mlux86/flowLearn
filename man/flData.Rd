@@ -17,5 +17,5 @@ Getter for the "data" slot
 }
 \examples{
 flData(flSampleDensdat)
-      
+
 }

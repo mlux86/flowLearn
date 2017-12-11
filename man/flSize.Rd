@@ -17,5 +17,5 @@ Returns the size of a given DensityData object.
 }
 \examples{
 print(flSize(flSampleDensdat)) # print size of flSampleDensdat
-      
+
 }

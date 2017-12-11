@@ -13,20 +13,20 @@ An S4 class to represent density data used by flowLearn.
 \describe{
 \item{\code{data}}{A data frame where each row represents a density of a particular channel, together with additional information.
 
-      Columns of the data frame are: 
+      Columns of the data frame are:
 
       - fcs: FCS file of the density.
 
       - population: Analyzed population of the density.
 
       - channelIdx: Identifier of the channel for which the density was calculated.
-      
+
       - <numFeatures> x-values of the density
-      
+
       - <numFeatures> y-values of the density
-      
+
       - gate.low: Lower threshold for this channel (defaults to NaN)
-      
+
       - gate.high: Upper threshold for this channel (defaults to NaN)}
 
 \item{\code{numFeatures}}{Number of used features.}
@@ -34,5 +34,5 @@ An S4 class to represent density data used by flowLearn.
 
 \examples{
 str(flSampleDensdat) # summarizes the sample DensityData object provided by flowLearn
-      
+
 }

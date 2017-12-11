@@ -18,7 +18,7 @@ Vector of indices in the densdat data that were determined to be prototypes.
 Using PAM clustering on L1 density distances, this method returns a list of prototype indices which are rows in the given DensityData object.
 }
 \examples{
-dd <- flFind(flSampleDensdat, 'population == "notplasma" & channelIdx == 2')
+dd <- flFind(flSampleDensdat, population = 'notplasma', channelIdx = 2)
 protoIdx <- flSelectPrototypes(dd, 1)
 print(protoIdx)
 
