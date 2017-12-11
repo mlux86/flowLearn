@@ -306,10 +306,10 @@ setMethod(f = "flConcat", signature = "DensityData",
 #'
 flNormalizePopulationName <- function(population)
 {
-    populationNormalized <- stringr::str_replace_all(population, '\\+', 'p')
-    populationNormalized <- stringr::str_replace_all(populationNormalized, '-', 'n')
-    populationNormalized <- tolower(stringr::str_replace_all(populationNormalized, '[^a-zA-Z0-9]+', ''))
-    populationNormalized
+    populationNormalized <- gsub('\\+', 'p', population)
+    populationNormalized <- gsub('-', 'n', populationNormalized)
+    populationNormalized <- tolower(gsub('[^a-zA-Z0-9]+', '', populationNormalized))
+    return(populationNormalized)
 }
 
 #' Estimates a density on a given data vector.

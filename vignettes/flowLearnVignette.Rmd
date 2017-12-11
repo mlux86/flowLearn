@@ -37,7 +37,6 @@ It depends on four libraries which are all available in the standard `R` ecosyst
 
 * `dtw`
 * `parallel`
-* `stringr`
 * `cluster`
 
 All flowLearn methods have the prefix `fl` in order to avoid clashes with other packages.
