@@ -1,6 +1,6 @@
 Package: flowLearn
 Title: flowLearn
-Version: 0.99.7
+Version: 0.99.8
 Authors@R: person("Markus", "Lux", email = "mlux@techfak.uni-bielefeld.de", role = c("aut", "cre"))
 Description: flowLearn is an R package for predicting flow cytometry gating
     thresholds based on only density information and (very) few manual expert gates
