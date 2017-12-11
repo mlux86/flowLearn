@@ -367,10 +367,17 @@ flDerivativeDtwDistanceMatrix <- function(densA, densB)
         stop('Densities A and B must have same length.')
     }
 
-    difA <- sapply(2:(lenA-1), function(i) (densA$y[i] - densA$y[i-1]) + ((densA$y[i+1] - densA$y[i-1]) / 2) / 2)
+    if(lenA < 3 || lenB < 3)
+    {
+        stop('Densities A and B must be at least of length 3.')
+    }
+
+    idxA <- 2:(lenA-1)
+    difA <- (densA$y[idxA] - densA$y[idxA-1]) + ((densA$y[idxA+1] - densA$y[idxA-1]) / 2) / 2
     difA <- c(difA[1], difA, difA[lenA-2])
 
-    difB <- sapply(2:(lenB-1), function(i) (densB$y[i] - densB$y[i-1]) + ((densB$y[i+1] - densB$y[i-1]) / 2) / 2)
+    idxB <- 2:(lenB-1)
+    difB <- (densB$y[idxB] - densB$y[idxB-1]) + ((densB$y[idxB+1] - densB$y[idxB-1]) / 2) / 2
     difB <- c(difB[1], difB, difB[lenB-2])
 
     proxy::dist(difA, difB)

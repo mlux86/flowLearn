@@ -78,7 +78,14 @@ flEvalF1ScoreFCS <- function(densdat, fcs, population, trueAssignments, parentEx
 
     precision <- sum(trueAssignments & predictedGateAssignments) / sum(predictedGateAssignments)
     recall <- sum(trueAssignments & predictedGateAssignments) / sum(trueAssignments)
-    f1 <- 2 * precision * recall / (precision + recall)
+
+    if (precision + recall == 0)
+    {
+        f1 <- 0
+    } else
+    {
+        f1 <- 2 * precision * recall / (precision + recall)
+    }
 
     data.frame(precision = precision, recall = recall, f1 = f1, trueProportion = sum(trueAssignments) / length(trueAssignments), predictedProportion = sum(predictedGateAssignments) / length(predictedGateAssignments))
 }
