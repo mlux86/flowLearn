@@ -477,15 +477,9 @@ flAlignThreshold <- function(dens, refDens, refThreshold)
 
     idx <- dtwObj$index1[dtwObj$index2 == nearestRefXIdx]
 
-    if (length(idx) > 1)
-    {
-        thresh <- mean(dens$x[idx])
-    } else
-    {
-        thresh <- dens$x[idx]
-    }
+    thresh <- mean(dens$x[idx])
 
-    thresh
+    return(thresh)
 }
 
 #' Predicts thresholds for all densities in a DensityData object, using a set of prototypes.
@@ -520,18 +514,17 @@ flPredictThresholds <- function(densdat, protoIdx)
 
 	D <- as.matrix(dist(flGetDensity(densdat)$y, method = 'manhattan'))
 
-	cl <- parallel::makeCluster(parallel::detectCores(), type = "FORK")
-
 
   tryCatch({
 
-      predicted <- t(parallel::parSapply(cl, testIdx, function(i)
+      predicted <- BiocParallel::bplapply(testIdx, function(i)
       {
           j <- order(D[protoIdx, i])[1]
           g.l <- flAlignThreshold(flGetDensity(flAt(densdat, i)), flGetDensity(flAt(densdat, protoIdx[j])), flGetGate(flAt(densdat, protoIdx[j]))[1])
           g.h <- flAlignThreshold(flGetDensity(flAt(densdat, i)), flGetDensity(flAt(densdat, protoIdx[j])), flGetGate(flAt(densdat, protoIdx[j]))[2])
           c(g.l, g.h)
-      }))
+      }, BPPARAM = BiocParallel::SnowParam(type = "FORK"))
+      predicted <- do.call(rbind, predicted)
 
 	    ndim <- ncol(densdat@data)
 	    densdat@data[testIdx, c(ndim-1, ndim)] <- predicted
@@ -539,8 +532,6 @@ flPredictThresholds <- function(densdat, protoIdx)
 
 	}, error = function(e) {
 		print(e)
-	}, finally = {
-		parallel::stopCluster(cl)
 	})
 
 }

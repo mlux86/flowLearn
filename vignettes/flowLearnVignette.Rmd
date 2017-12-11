@@ -36,8 +36,10 @@ library(flowLearn)
 It depends on four libraries which are all available in the standard `R` ecosystem:
 
 * `dtw`
-* `parallel`
 * `cluster`
+* `stats`
+* `proxy`
+* `BiocParallel`
 
 All flowLearn methods have the prefix `fl` in order to avoid clashes with other packages.
 
@@ -112,6 +114,7 @@ Having the prototype identified, it is now the task of predicting thresholds on 
 samples.
 
 ```{r, fig.width=7, fig.height=5}
+library(flowLearn)
 # Use flPredictThresholds() to predict thresholds using a given prototype
 # All other samples are aligned with the prototype and its threshold is transferred.
 ddp <- flPredictThresholds(dd, protoIdx)
@@ -146,6 +149,8 @@ the $F_1$-scores. For that, we compare the predicted to the true gate assignment
 
 ```{r, fig.width=7, fig.height=5}
 # Calculate the F1 score for each sample
+flSampleBcellEvaluationData <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleBcellEvaluationData.rds')))
+
 f1Scores <- sapply(samples, function(fcs)
 {
 
@@ -153,8 +158,6 @@ f1Scores <- sapply(samples, function(fcs)
 	# the predicted population name, true gate assignments and parent population expressions.
 	# It gates the child population using the predicted gates and compares the result to
 	# the true population in terms of precision, recall and effectively F1 score.
-
-  flSampleBcellEvaluationData <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleBcellEvaluationData.rds')))
 
 	flEvalF1ScoreFCS(ddp,
 					 fcs,

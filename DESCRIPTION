@@ -11,7 +11,7 @@ License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-    proxy,stats,dtw,parallel,cluster
+    proxy,stats,dtw,BiocParallel,cluster
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown
