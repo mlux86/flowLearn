@@ -110,6 +110,42 @@ setMethod(f = "flAdd", signature = "DensityData",
                      }
                      )
 
+#' Adds densities from a flowFrame that represents a parent cell population.
+#'
+#' @param obj A DensityData object.
+#' @param parentFlowFrame An object of type flowFrame representing the parent population.
+#' @param channelIndices A vector of indices of channels to use for gating the child population.
+#' @param populationName The name of the child population.
+#' @param fcsName The different name for the FCS file. By default parentFlowFrame@description$"$FIL" is used.
+#'
+#' @return The new DensityData object containing one density for each channel specified.
+#'
+#' @examples
+#' densdat <- flInit(new('DensityData'))
+#' flSampleFlowFrame <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleFlowFrame.rds')))
+#' densdat <- flAddFlowFrame(densdat, flSampleFlowFrame, c(1,2), 'Granulocyte Pre')
+#'
+#' @export
+setGeneric(name = "flAddFlowFrame", def = function(obj, parentFlowFrame, channelIndices, populationName, fcsName = NULL) { standardGeneric("flAddFlowFrame") })
+
+setMethod(f = "flAddFlowFrame", signature = "DensityData",
+                      definition = function(obj, parentFlowFrame, channelIndices, populationName, fcsName = NULL)
+                      {
+                          if (is.null(fcsName))
+                          {
+                              fcsName <- parentFlowFrame@description$"$FIL"
+                          }
+
+                          for (c in channelIndices)
+                          {
+                              dens <- flEstimateDensity(parentFlowFrame@exprs[, c], obj@numFeatures)
+                              obj <- flAdd(obj, fcsName, populationName, c, dens$x, dens$y)
+                          }
+
+                          return(obj)
+                      }
+                      )
+
 #' Returns a list(x,y) with density x and y values for the given DensityData object. Usually this is called on DensityData objects with only one row, to extract a density for one specific channel.
 #'
 #' @param obj The DensityData object.

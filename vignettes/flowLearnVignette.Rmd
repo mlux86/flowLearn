@@ -191,13 +191,28 @@ This results in an empty `DensityData` object with the following `1029` variable
 * `gate.low`: Lower threshold for this channel (defaults to NaN)
 * `gate.high`: Upper threshold for this channel (defaults to NaN)
 
-Now it is the task to add densities that can be used by flowLearn. This is done using the `flAdd()`
+Now it is the task to add densities that can be used by flowLearn. This is done using the `flAddFlowFrame()`
 method. Other methods of the `DensityData` class are given by `??flowLearn::DensityData`.
+
+```{r}
+flSampleFlowFrame <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleFlowFrame.rds')))
+densdat <- flAddFlowFrame(densdat, flSampleFlowFrame, c(1, 2), 'granulocytepre')
+
+```
+
+We can now verify that the `DensityData` object contains two densities:
+
+```{r}
+print(flSize(densdat) == 2)
+```
+
+A more detailed way of adding densities is given by the direct use of `flAdd()`:
 
 ```{r}
 # Use flEstimateDensity() to obtain a kernel density estimate that is smooth.
 # It is given a vector of cell measurements for one channel and the number of density features.
 # In this vignette example, the provided flSampleFlowFrame contains only two channels.
+densdat <- flInit(new('DensityData'))
 
 flSampleFlowFrame <- readRDS(gzcon(url('https://raw.githubusercontent.com/mlux86/flowLearn/master/extra/data/flSampleFlowFrame.rds')))
 
@@ -207,11 +222,8 @@ densB <- flEstimateDensity(flSampleFlowFrame@exprs[, 1], densdat@numFeatures)
 # Now add the densities to the `densdat` object.
 densdat <- flAdd(densdat, flSampleFlowFrame@description$"$FIL", 'granulocytepre', 1, densA$x, densA$y)
 densdat <- flAdd(densdat, flSampleFlowFrame@description$"$FIL", 'granulocytepre', 2, densB$x, densB$y)
-```
 
-We can now verify that the `DensityData` object contains two densities:
-
-```{r}
+# Verify
 print(flSize(densdat) == 2)
 ```
 
