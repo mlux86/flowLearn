@@ -191,6 +191,7 @@ setMethod(f = "flGetGate", signature = "DensityData",
 
 #' Returns a new DensityData object with a subset of entries of the supplied obj.
 #'
+#' @param obj An existing DensityData object.
 #' @param fcs The FCS file to filter for.
 #' @param population The population to filter for.
 #' @param channelIdx The channel to filter for.
