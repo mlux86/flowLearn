@@ -7,6 +7,8 @@
 flFind(obj, fcs, population, channelIdx)
 }
 \arguments{
+\item{obj}{An existing DensityData object.}
+
 \item{fcs}{The FCS file to filter for.}
 
 \item{population}{The population to filter for.}
