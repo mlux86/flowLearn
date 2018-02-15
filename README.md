@@ -1,5 +1,10 @@
 # flowLearn
-flowLearn: Fast and precise identification and quality checking of cell populations in flow cytometry
+
+Markus Lux Ryan Remy Brinkman Cedric Chauve Adam Laing Anna Lorenc Lucie Abeler-Dörner Barbara Hammer
+
+[**flowLearn: Fast and precise identification and quality checking of cell populations in flow cytometry**](https://doi.org/10.1093/bioinformatics/bty082)
+
+Bioinformatics, 2018
 
 ## Abstract
 
